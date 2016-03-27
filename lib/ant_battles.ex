@@ -1,0 +1,2 @@
+defmodule AntBattles do
+end
