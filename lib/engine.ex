@@ -1,5 +1,5 @@
 defmodule Engine do
-  defstruct commands: [], world: %World{}
+  defstruct instructions: [], world: %World{}
 
   def start do
     GenServer.start(EngineServer, [], name: EngineServer)
@@ -14,6 +14,12 @@ defmodule Engine do
   def register(user, name) do
     user
     |> execute(%Register{name: name})
+    |> respond
+  end
+
+  def spawn(user, nest_id) do
+    user
+    |> execute(%SpawnAnt{nest_id: nest_id})
     |> respond
   end
 

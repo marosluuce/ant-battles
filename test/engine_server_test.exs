@@ -8,17 +8,17 @@ defmodule EngineServerTest do
   end
 
   test "queues a command" do
-    command = %Register{name: "name"}
+    command = %Noop{}
     {:reply, reply, state} =
       EngineServer.handle_call({:me, command}, {self(), :ref}, %Engine{})
 
     assert reply == {:ok, :enqueued}
-    assert state.commands == [{:me, self(), command}]
+    assert state.instructions == [{:me, self(), command}]
   end
 
   test "only queues one command per user" do
-    command_1 = %Register{name: "name"}
-    command_2 = %Register{name: "something"}
+    command_1 = %Noop{}
+    command_2 = %Noop{}
 
     {:reply, _, state} =
       EngineServer.handle_call({:me, command_1}, {self(), :ref}, %Engine{})
@@ -27,46 +27,37 @@ defmodule EngineServerTest do
       EngineServer.handle_call({:me, command_2}, {self(), :ref}, state)
 
     assert error == {:error, :already_enqueued}
-    assert state.commands == [{:me, self(), command_1}]
+    assert state.instructions == [{:me, self(), command_1}]
   end
 
   test "tick clears the command queue" do
+    engine = %Engine{instructions: [{:me, self(), %Noop{}}]}
     {:noreply, state} =
-      EngineServer.handle_cast(:tick, %Engine{commands: [{:me, self(), :command}]})
+      EngineServer.handle_cast(:tick, engine)
 
-    assert state.commands |> Enum.empty?
+    assert Enum.empty?(state.instructions)
   end
 
-  test "unknown commands do nothing" do
-    EngineServer.handle_cast(:tick, %Engine{commands: [{:me, self(), :command}]})
+  test "known commands succeed" do
+    engine = %Engine{instructions: [{:me, self(), %Noop{}}]}
+    EngineServer.handle_cast(:tick, engine)
+
+    assert_received {:ok, :ok}
+  end
+
+  test "unknown commands error" do
+    EngineServer.handle_cast(:tick, %Engine{instructions: [{:me, self(), :unknown}]})
 
     assert_received {:error, :unknown_command}
   end
 
   test "tick executes queued commands" do
-    engine = %Engine{commands: [{:me, self(), %Register{name: "name"}}]}
-    {:noreply, new_engine} = EngineServer.handle_cast(:tick, engine)
+    initial_world = %World{}
+    instruction = {:me, self(), %Register{name: "name"}}
+    engine = %Engine{world: initial_world, instructions: [instruction]}
 
-    assert new_engine.world.nests == [%Nest{name: "name"}]
-  end
+    {:noreply, %Engine{world: updated_world}} = EngineServer.handle_cast(:tick, engine)
 
-  test "joining sends nest details" do
-    engine = %Engine{commands: [{:me, self(), %Register{name: "name"}}]}
-    {:noreply, state} = EngineServer.handle_cast(:tick, engine)
-
-    [nest] = state.world.nests
-    message = %{position: nest.pos, food: nest.food, id: nest.id}
-
-    assert_received {:ok, message}
-  end
-
-  test "moving an ant sends details" do
-    world = %World{ants: [%Ant{id: 1, pos: {2, 3}}]}
-    command = %Move{ant_id: 1, direction: {0, 1}}
-    engine = %Engine{commands: [{:me, self(), command}], world: world}
-
-    EngineServer.handle_cast(:tick, engine)
-
-    assert_received {:ok, "Ant-1 now at (2, 4)"}
+    refute initial_world == updated_world
   end
 end
