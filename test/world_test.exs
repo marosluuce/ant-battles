@@ -12,32 +12,32 @@ defmodule WorldTest do
   end
 
   test "spawning an ant" do
-    {:ok, world} = %World{} |> World.register("name")
-    {:ok, world} = world |> World.spawn("name")
+    nest = %Nest{}
+    {:ok, world} = %World{nests: [nest]} |> World.spawn(nest.id)
 
     assert World.ants(world) |> Enum.count == 1
   end
 
   test "spawned ants have unique ids" do
-    {:ok, world} = %World{} |>  World.register("name")
+    nest = %Nest{}
 
     [ant_1, ant_2] =
-      with {:ok, world} <- World.spawn(world, "name"),
-           {:ok, world} <- World.spawn(world, "name"),
-        do: World.ants(world)
+      with {:ok, world} <- World.spawn(%World{nests: [nest]}, nest.id),
+           {:ok, world} <- World.spawn(world, nest.id),
+        do: world |> World.ants
 
     refute ant_1.id == ant_2.id
   end
 
   test "spawning errors when nest has no food" do
-    world = %World{nests: [%Nest{food: 0, name: "name"}]}
-    error = World.spawn(world, "name")
+    nest = %Nest{food: 0}
+    error = World.spawn(%World{nests: [nest]}, nest.id)
 
-    assert error == {:error, "Nest name has insufficient food to spawn ant."}
+    assert error == {:error, :insufficient_food}
   end
 
   test "spawning errors when name doesn't exist" do
-    assert World.spawn(%World{}, "name") == {:error, "Nest name does not exist."}
+    assert World.spawn(%World{}, 1) == {:error, :unknown_nest}
   end
 
   test "moving an ant" do
@@ -49,8 +49,8 @@ defmodule WorldTest do
   end
 
   test "moving errors when ant does not exist" do
-    {:error, message} = %World{} |> World.move_ant(1, {0, 1})
-    assert message == "Ant 1 does not exist."
+    result = %World{} |> World.move_ant(1, {0, 1})
+    assert result == {:error, :unknown_ant}
   end
 
   test "spawning food" do

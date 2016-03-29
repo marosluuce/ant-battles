@@ -11,13 +11,13 @@ defmodule Engine do
     start_tick()
   end
 
-  def register(user, name) do
+  def join(user, name) do
     user
-    |> execute(%Register{name: name})
+    |> execute(%Join{name: name})
     |> respond
   end
 
-  def spawn(user, nest_id) do
+  def spawn_ant(user, nest_id) do
     user
     |> execute(%SpawnAnt{nest_id: nest_id})
     |> respond

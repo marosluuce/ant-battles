@@ -6,13 +6,12 @@ defmodule EngineTest do
     :ok
   end
 
-  test "registers a user" do
-    assert {:ok, _} = Engine.register(:me, "name")
+  test "a user joins" do
+    assert {:ok, _} = Engine.join(:me, "name")
   end
 
-  @tag :skip
-  test "spawns an ant" do
-    {:ok, %{id: nest_id}} = Engine.register(:me, "name")
-    assert {:ok, _} = Engine.spawn(:me, nest_id)
+  test "a user spawns an ant" do
+    {:ok, %{id: nest_id}} = Engine.join(:me, "name")
+    assert {:ok, _} = Engine.spawn_ant(:me, nest_id)
   end
 end

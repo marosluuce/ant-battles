@@ -7,8 +7,8 @@ defmodule NestTest do
   end
 
   test "cannot consume more food than available" do
-    {:error, message} = %Nest{food: 0, name: "name"} |> Nest.consume_food
-    assert message == "Nest name has insufficent food."
+    result = %Nest{food: 0, name: "name"} |> Nest.consume_food
+    assert result == {:error, :insufficient_food}
   end
 
   test "delivering food increases food" do

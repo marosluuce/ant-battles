@@ -9,14 +9,14 @@ defmodule World do
     end
   end
 
-  def spawn(world, name) do
-    {found, nests} = world.nests |> Enum.partition(&(&1.name == name))
+  def spawn(world, id) do
+    {found, nests} = world.nests |> Enum.partition(&(&1.id == id))
 
     case found do
       [nest] ->
-        spawn_ant(world, name, Nest.consume_food(nest), nests)
+        spawn_ant(world, id, Nest.consume_food(nest), nests)
       _ ->
-        {:error, "Nest #{name} does not exist."}
+        {:error, :unknown_nest}
     end
   end
 
@@ -35,7 +35,7 @@ defmodule World do
       [ant] ->
         {:ok, %{world | ants: [Ant.move(ant, direction) | ants]}}
       _ ->
-        {:error, "Ant #{ant_id} does not exist."}
+        {:error, :unknown_ant}
     end
   end
 
@@ -54,8 +54,8 @@ defmodule World do
     {:ok, new_world}
   end
 
-  defp spawn_ant(_, name, {:error, _}, _) do
-    {:error, "Nest #{name} has insufficient food to spawn ant."}
+  defp spawn_ant(_, _, {:error, _}, _) do
+    {:error, :insufficient_food}
   end
 
   defp registered?(world, name) do
@@ -63,7 +63,6 @@ defmodule World do
     |> Enum.map(&(&1.name))
     |> Enum.member?(name)
   end
-
 
   defp id, do: System.unique_integer([:positive])
 end

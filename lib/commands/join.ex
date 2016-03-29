@@ -1,8 +1,8 @@
-defmodule Join do
+defmodule Register do
   defstruct name: ""
 end
 
-defimpl Command, for: Join do
+defimpl Command, for: Register do
 
   def execute(command, world) do
     World.register(world, command.name)
