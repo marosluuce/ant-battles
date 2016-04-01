@@ -1,5 +1,5 @@
 defmodule Ant do
-  defstruct id: 0, pos: {0, 0}, has_food: false
+  defstruct id: 0, nest_id: 0, pos: {0, 0}, has_food: false, team: ""
 
   def move(ant, {dx, dy}) do
     Map.update!(ant, :pos, fn {x, y} -> {x + dx, y + dy} end)

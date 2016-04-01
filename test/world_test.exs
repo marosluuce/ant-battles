@@ -1,9 +1,9 @@
 defmodule WorldTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "registering creates a nest" do
     {:ok, world} = %World{} |> World.register("name")
-    assert World.nests(world) == [%Nest{name: "name"}]
+    assert World.nests(world) == [%Nest{team: "name"}]
   end
 
   test "registering does not create duplicate " do
@@ -12,18 +12,20 @@ defmodule WorldTest do
   end
 
   test "spawning an ant" do
-    nest = %Nest{}
-    {:ok, world} = %World{nests: [nest]} |> World.spawn(nest.id)
+    nest = %Nest{id: 1}
+    {:ok, world} = %World{nests: [nest]} |> World.spawn_ant(nest.id)
 
-    assert World.ants(world) |> Enum.count == 1
+    [ant] = world |> World.ants
+
+    assert ant.nest_id == nest.id
   end
 
   test "spawned ants have unique ids" do
     nest = %Nest{}
 
     [ant_1, ant_2] =
-      with {:ok, world} <- World.spawn(%World{nests: [nest]}, nest.id),
-           {:ok, world} <- World.spawn(world, nest.id),
+      with {:ok, world} <- World.spawn_ant(%World{nests: [nest]}, nest.id),
+           {:ok, world} <- World.spawn_ant(world, nest.id),
         do: world |> World.ants
 
     refute ant_1.id == ant_2.id
@@ -31,13 +33,13 @@ defmodule WorldTest do
 
   test "spawning errors when nest has no food" do
     nest = %Nest{food: 0}
-    error = World.spawn(%World{nests: [nest]}, nest.id)
+    error = World.spawn_ant(%World{nests: [nest]}, nest.id)
 
     assert error == {:error, :insufficient_food}
   end
 
   test "spawning errors when name doesn't exist" do
-    assert World.spawn(%World{}, 1) == {:error, :unknown_nest}
+    assert World.spawn_ant(%World{}, 1) == {:error, :unknown_nest}
   end
 
   test "moving an ant" do

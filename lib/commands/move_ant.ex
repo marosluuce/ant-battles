@@ -1,10 +1,10 @@
-defmodule Move do
-  defstruct ant_id: -1, direction: {0, 0}
+defmodule MoveAnt do
+  defstruct ant_id: -1, velocity: {0, 0}
 end
 
-defimpl Command, for: Move do
-  def execute(%Move{ant_id: ant_id, direction: direction}, world) do
-    World.move_ant(world, ant_id, direction)
+defimpl Command, for: MoveAnt do
+  def execute(%MoveAnt{ant_id: ant_id, velocity: velocity}, world) do
+    World.move_ant(world, ant_id, velocity)
   end
 
   def success(command, pid, %World{ants: ants}) do

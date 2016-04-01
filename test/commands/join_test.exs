@@ -1,8 +1,8 @@
 defmodule JoinTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "it registers a user" do
-    {:ok, world} = Command.execute(%Join{name: "name"}, %World{})
+    {:ok, world} = Command.execute(%Join{team: "name"}, %World{})
 
     assert world |> World.nests |> Enum.count == 1
   end
@@ -10,11 +10,10 @@ defmodule JoinTest do
   test "it sends a success message" do
     {:ok, world} = World.register(%World{}, "name")
 
-    Command.success(%Join{name: "name"}, self(), world)
+    Command.success(%Join{team: "name"}, self(), world)
 
     [nest] = world |> World.nests
-    message = %{type: :nest, location: nest.pos, food: nest.food, ants: 0, id: nest.id, team: nest.name}
-
+    message = Message.details(nest, world)
     assert_received {:ok, ^message}
   end
 

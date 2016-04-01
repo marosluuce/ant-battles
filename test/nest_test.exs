@@ -1,5 +1,5 @@
 defmodule NestTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "consuming food decreases food" do
     {:ok, nest} = %Nest{food: 5} |> Nest.consume_food
@@ -7,7 +7,7 @@ defmodule NestTest do
   end
 
   test "cannot consume more food than available" do
-    result = %Nest{food: 0, name: "name"} |> Nest.consume_food
+    result = %Nest{food: 0} |> Nest.consume_food
     assert result == {:error, :insufficient_food}
   end
 

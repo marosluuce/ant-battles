@@ -1,5 +1,5 @@
 defmodule AntTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "can move an ant" do
     ant = %Ant{pos: {0, 0}} |> Ant.move({1, 0})

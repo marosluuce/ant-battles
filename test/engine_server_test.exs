@@ -1,10 +1,10 @@
 defmodule EngineServerTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
 
   test "a new server is an empty world" do
-    {:ok, state} = EngineServer.init(:args)
+    {:ok, state} = EngineServer.init(1)
 
-    assert state == %Engine{}
+    assert state == %Engine{delay: 1}
   end
 
   test "queues a command" do
@@ -53,7 +53,7 @@ defmodule EngineServerTest do
 
   test "tick executes queued commands" do
     initial_world = %World{}
-    instruction = {:me, self(), %Register{name: "name"}}
+    instruction = {:me, self(), %Join{team: "name"}}
     engine = %Engine{world: initial_world, instructions: [instruction]}
 
     {:noreply, %Engine{world: updated_world}} = EngineServer.handle_cast(:tick, engine)

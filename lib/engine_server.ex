@@ -1,9 +1,7 @@
 defmodule EngineServer do
   use GenServer
 
-  @delay 1000
-
-  def init(_), do: {:ok, %Engine{}}
+  def init(delay), do: {:ok, %Engine{delay: delay}}
 
   def handle_call({user, command}, {pid, _}, state) do
     case enqueue_instruction({user, pid, command}, state) do
@@ -18,7 +16,7 @@ defmodule EngineServer do
 
   def handle_info(:tick, state) do
     GenServer.cast(__MODULE__, :tick)
-    Process.send_after(self(), :tick, @delay)
+    Process.send_after(self(), :tick, state.delay)
 
     {:noreply, state}
   end

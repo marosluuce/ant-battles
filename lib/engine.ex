@@ -1,25 +1,33 @@
 defmodule Engine do
-  defstruct instructions: [], world: %World{}
+  defstruct delay: 1000, instructions: [], world: %World{}
 
-  def start do
-    GenServer.start(EngineServer, [], name: EngineServer)
+  def start(delay) do
+    GenServer.start(EngineServer, delay, name: EngineServer)
     start_tick()
   end
 
-  def start_link do
-    GenServer.start_link(EngineServer, [], name: EngineServer)
+  def start_link(delay) do
+    GenServer.start_link(EngineServer, delay, name: EngineServer)
     start_tick()
   end
 
-  def join(user, name) do
+  def join(user, team) do
     user
-    |> execute(%Join{name: name})
+    |> execute(%Join{team: team})
     |> respond
   end
 
   def spawn_ant(user, nest_id) do
     user
     |> execute(%SpawnAnt{nest_id: nest_id})
+    |> respond
+  end
+
+  def move_ant(user, ant_id, direction) do
+    velocity = Commands.move(direction)
+
+    user
+    |> execute(%MoveAnt{ant_id: ant_id, velocity: velocity})
     |> respond
   end
 

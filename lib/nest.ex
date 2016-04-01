@@ -1,5 +1,5 @@
 defmodule Nest do
-  defstruct name: "", id: 0, pos: {0, 0}, food: 5
+  defstruct team: "", id: 0, pos: {0, 0}, food: 5
 
   def consume_food(%Nest{food: food}) when food <= 0 do
     {:error, :insufficient_food}

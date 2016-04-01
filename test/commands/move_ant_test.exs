@@ -1,8 +1,8 @@
-defmodule MoveTest do
-  use ExUnit.Case
+defmodule MoveAntTest do
+  use ExUnit.Case, async: true
 
   test "it moves an ant" do
-    command = %Move{ant_id: 1, direction: {0, 1}}
+    command = %MoveAnt{ant_id: 1, velocity: {0, 1}}
     world = %World{ants: [%Ant{id: 1, pos: {2, 3}}]}
 
     {:ok, updated_world} = Command.execute(command, world)
@@ -12,7 +12,7 @@ defmodule MoveTest do
   end
 
   test "it sends a success message" do
-    command = %Move{ant_id: 1}
+    command = %MoveAnt{ant_id: 1}
     world = %World{ants: [%Ant{id: 1, pos: {2, 4}}]}
 
     Command.success(command, self(), world)
@@ -21,9 +21,7 @@ defmodule MoveTest do
   end
 
   test "it sends a failure message" do
-    command = %Move{ant_id: 1}
-
-    Command.failure(command, self(), %World{})
+    Command.failure(%MoveAnt{ant_id: 1}, self(), %World{})
 
     assert_received {:error, :invalid_id}
   end

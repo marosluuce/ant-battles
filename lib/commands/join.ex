@@ -1,26 +1,19 @@
-defmodule Register do
-  defstruct name: ""
+defmodule Join do
+  defstruct team: ""
 end
 
-defimpl Command, for: Register do
+defimpl Command, for: Join do
 
   def execute(command, world) do
-    World.register(world, command.name)
+    World.register(world, command.team)
   end
 
-  def success(command, pid, %World{nests: nests, ants: ants}) do
-    nest = Enum.find(nests, &(&1.name == command.name))
+  def success(command, pid, world) do
+    nest = world
+    |> World.nests
+    |> Enum.find(&(&1.team == command.team))
 
-    message = %{
-      type: :nest,
-      location: nest.pos,
-      food: nest.food,
-      team: nest.name,
-      id: nest.id,
-      ants: ants |> Enum.filter(&(&1.nest_id == nest.id)) |> Enum.count
-    }
-
-    send pid, {:ok, message}
+    send pid, {:ok, Message.details(nest, world)}
   end
 
   def failure(_, pid, _) do

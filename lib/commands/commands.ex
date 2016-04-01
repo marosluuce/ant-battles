@@ -1,12 +1,11 @@
 defmodule Commands do
-
-  def move(user, ant_id, :n), do: {user, %Move{ant_id: ant_id, direction: {0, 1}}}
-  def move(user, ant_id, :s), do: {user, %Move{ant_id: ant_id, direction: {0, -1}}}
-  def move(user, ant_id, :e), do: {user, %Move{ant_id: ant_id, direction: {1, 0}}}
-  def move(user, ant_id, :w), do: {user, %Move{ant_id: ant_id, direction: {-1, 0}}}
-  def move(user, ant_id, :nw), do: {user, %Move{ant_id: ant_id, direction: {-1, 1}}}
-  def move(user, ant_id, :ne), do: {user, %Move{ant_id: ant_id, direction: {1, 1}}}
-  def move(user, ant_id, :sw), do: {user, %Move{ant_id: ant_id, direction: {-1, -1}}}
-  def move(user, ant_id, :se), do: {user, %Move{ant_id: ant_id, direction: {1, -1}}}
-  def move(user, ant_id, _), do: {user, %Move{ant_id: ant_id, direction: {0, 0}}}
+  def move("n"), do: {0, 1}
+  def move("s"), do: {0, -1}
+  def move("e"), do: {1, 0}
+  def move("w"), do: {-1, 0}
+  def move("nw"), do: {-1, 1}
+  def move("ne"), do: {1, 1}
+  def move("sw"), do: {-1, -1}
+  def move("se"), do: {1, -1}
+  def move(_), do: {0, 0}
 end

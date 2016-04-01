@@ -1,15 +1,15 @@
 defmodule World do
   defstruct nests: [], ants: [], food: []
 
-  def register(world, name) do
-    if registered?(world, name) do
+  def register(world, team) do
+    if registered?(world, team) do
       {:error, :name_taken}
     else
-      {:ok, Map.update!(world, :nests, &([%Nest{name: name} | &1]))}
+      {:ok, Map.update!(world, :nests, &([%Nest{team: team} | &1]))}
     end
   end
 
-  def spawn(world, id) do
+  def spawn_ant(world, id) do
     {found, nests} = world.nests |> Enum.partition(&(&1.id == id))
 
     case found do
@@ -49,7 +49,7 @@ defmodule World do
     new_world =
       %{world |
         nests: [nest | nests],
-        ants: [%Ant{id: id(), pos: nest.pos} | world.ants]}
+        ants: [%Ant{id: id(), nest_id: nest.id, pos: nest.pos, team: nest.team} | world.ants]}
 
     {:ok, new_world}
   end
@@ -58,10 +58,10 @@ defmodule World do
     {:error, :insufficient_food}
   end
 
-  defp registered?(world, name) do
+  defp registered?(world, team) do
     world.nests
-    |> Enum.map(&(&1.name))
-    |> Enum.member?(name)
+    |> Enum.map(&(&1.team))
+    |> Enum.member?(team)
   end
 
   defp id, do: System.unique_integer([:positive])
