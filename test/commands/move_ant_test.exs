@@ -13,11 +13,13 @@ defmodule MoveAntTest do
 
   test "it sends a success message" do
     command = %MoveAnt{ant_id: 1}
-    world = %World{ants: [%Ant{id: 1, pos: {2, 4}}]}
+    ant = %Ant{id: 1, pos: {2, 4}}
+    world = %World{ants: [ant]}
 
     Command.success(command, self(), world)
 
-    assert_received {:ok, "Ant-1 now at (2, 4)"}
+    message = Message.details(ant, world)
+    assert_received {:ok, ^message}
   end
 
   test "it sends a failure message" do

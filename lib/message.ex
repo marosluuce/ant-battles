@@ -21,9 +21,25 @@ defmodule Message do
       location: ant.pos,
       id: ant.id,
       nest: ant.nest_id,
-      surroundings: %{},
       team: ant.team,
       got_food: ant.has_food
     }
+  end
+
+  def with_surroundings(ant = %Ant{}, world) do
+    surroundings = %{
+      n: [],
+      s: [],
+      e: [],
+      w: [],
+      ne: [],
+      nw: [],
+      se: [],
+      sw: []
+    }
+
+    ant
+    |> details(world)
+    |> Map.put(:surroundings, surroundings)
   end
 end

@@ -7,11 +7,12 @@ defimpl Command, for: MoveAnt do
     World.move_ant(world, ant_id, velocity)
   end
 
-  def success(command, pid, %World{ants: ants}) do
-    ant = Enum.find(ants, &(&1.id == command.ant_id))
-    {x, y} = ant.pos
+  def success(command, pid, world) do
+    ant = world
+    |> World.ants
+    |> Enum.find(&(&1.id == command.ant_id))
 
-    send pid, {:ok, "Ant-#{command.ant_id} now at (#{x}, #{y})"}
+    send pid, {:ok, Message.details(ant, world)}
   end
 
   def failure(_, pid, _) do

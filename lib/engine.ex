@@ -31,6 +31,18 @@ defmodule Engine do
     |> respond
   end
 
+  def look(user, ant_id) do
+    user
+    |> execute(%Look{ant_id: ant_id})
+    |> respond
+  end
+
+  def info(user, id) do
+    user
+    |> execute(%Info{id: id})
+    |> respond
+  end
+
   defp execute(user, command), do: GenServer.call(EngineServer, {user, command})
 
   defp respond({:ok, _}) do
