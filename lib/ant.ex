@@ -1,9 +1,7 @@
 defmodule Ant do
   defstruct id: 0, nest_id: 0, pos: {0, 0}, has_food: false, team: ""
 
-  def move(ant, {dx, dy}) do
-    Map.update!(ant, :pos, fn {x, y} -> {x + dx, y + dy} end)
-  end
+  def move(ant, {dx, dy}), do: Map.update!(ant, :pos, fn {x, y} -> {x + dx, y + dy} end)
 
   def pick_up_food(ant), do: %{ant | has_food: true}
 

@@ -5,8 +5,7 @@ end
 defimpl Command, for: Look do
   def execute(%Look{ant_id: ant_id}, world) do
     not_found = world
-    |> World.ants
-    |> Enum.find(&(&1.id == ant_id))
+    |> World.ant(ant_id)
     |> is_nil
 
     if not_found do
@@ -18,8 +17,7 @@ defimpl Command, for: Look do
 
   def success(%Look{ant_id: ant_id}, pid, world) do
     message = world
-    |> World.ants
-    |> Enum.find(&(&1.id == ant_id))
+    |> World.ant(ant_id)
     |> Message.with_surroundings(world)
 
     send pid, {:ok, message}

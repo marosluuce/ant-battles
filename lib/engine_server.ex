@@ -4,15 +4,15 @@ defmodule EngineServer do
   def init(delay), do: {:ok, %Engine{delay: delay}}
 
   def handle_call({user, command}, {pid, _}, state) do
-    case enqueue_instruction({user, pid, command}, state) do
-      {:ok, new_state} -> {:reply, {:ok, :enqueued}, new_state}
-      error            -> {:reply, error, state}
-    end
+    {user, pid, command}
+    |> enqueue_instruction(state)
+    |> send_enqueue_response(state)
   end
 
-  def handle_cast(:tick, state) do
-    {:noreply, %{state | instructions: [], world: update(state)}}
-  end
+  defp send_enqueue_response({:ok, new_state}, _), do: {:reply, {:ok, :enqueued}, new_state}
+  defp send_enqueue_response(error, state), do: {:reply, error, state}
+
+  def handle_cast(:tick, state), do: {:noreply, %{state | instructions: [], world: update(state)}}
 
   def handle_info(:tick, state) do
     GenServer.cast(__MODULE__, :tick)

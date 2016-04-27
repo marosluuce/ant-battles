@@ -3,20 +3,13 @@ defmodule Join do
 end
 
 defimpl Command, for: Join do
+  def execute(%Join{team: team}, world), do: World.register(world, team)
 
-  def execute(command, world) do
-    World.register(world, command.team)
-  end
-
-  def success(command, pid, world) do
-    nest = world
-    |> World.nests
-    |> Enum.find(&(&1.team == command.team))
+  def success(%Join{team: team}, pid, world) do
+    nest = world |> World.nest(team)
 
     send pid, {:ok, Message.details(nest, world)}
   end
 
-  def failure(_, pid, _) do
-    send pid, {:error, :name_taken}
-  end
+  def failure(_, pid, _), do: send pid, {:error, :name_taken}
 end

@@ -7,7 +7,7 @@ defmodule Message do
 
     %{
       type: :nest,
-      location: nest.pos,
+      location: nest.pos |> Tuple.to_list,
       food: nest.food,
       team: nest.team,
       id: nest.id,
@@ -18,7 +18,7 @@ defmodule Message do
   def details(ant = %Ant{}, _) do
     %{
       type: :ant,
-      location: ant.pos,
+      location: ant.pos |> Tuple.to_list,
       id: ant.id,
       nest: ant.nest_id,
       team: ant.team,

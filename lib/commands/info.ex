@@ -4,11 +4,8 @@ end
 
 defimpl Command, for: Info do
   def execute(%Info{id: id}, world) do
-    ants = world |> World.ants
-    nests = world |> World.nests
-
-    not_found = ants ++ nests
-    |> Enum.find(&(&1.id == id))
+    not_found = world
+    |> World.find(id)
     |> is_nil
 
     if not_found do
@@ -19,11 +16,7 @@ defimpl Command, for: Info do
   end
 
   def success(%Info{id: id}, pid, world) do
-    ants = world |> World.ants
-    nests = world |> World.nests
-
-    found = ants ++ nests
-    |> Enum.find(&(&1.id == id))
+    found = world |> World.find(id)
 
     send pid, {:ok, Message.details(found, world)}
   end

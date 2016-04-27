@@ -73,4 +73,29 @@ defmodule WorldTest do
 
     assert food == [{2, 3}, {2, 3}]
   end
+
+  test "finding an ant" do
+    ant_1 = %Ant{id: 1}
+    ant_2 = %Ant{id: 2}
+    world = %World{ants: [ant_1, ant_2]}
+
+    assert World.ant(world, 1) == ant_1
+  end
+
+  test "finding a nest" do
+    nest_1 = %Nest{id: 1, team: "me"}
+    nest_2 = %Nest{id: 2, team: "you"}
+    world = %World{nests: [nest_1, nest_2]}
+
+    assert World.nest(world, "me") == nest_1
+  end
+
+  test "finding by id" do
+    nest = %Nest{id: 1}
+    ant = %Ant{id: 2}
+    world = %World{ants: [ant], nests: [nest]}
+
+    assert World.find(world, 1) == nest
+    assert World.find(world, 2) == ant
+  end
 end

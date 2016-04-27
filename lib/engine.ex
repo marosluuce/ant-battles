@@ -11,43 +11,30 @@ defmodule Engine do
     start_tick()
   end
 
-  def join(user, team) do
-    user
-    |> execute(%Join{team: team})
-    |> respond
-  end
+  def join(user, team), do: execute(user, %Join{team: team})
 
-  def spawn_ant(user, nest_id) do
-    user
-    |> execute(%SpawnAnt{nest_id: nest_id})
-    |> respond
-  end
+  def spawn_ant(user, nest_id), do: execute(user, %SpawnAnt{nest_id: nest_id})
 
   def move_ant(user, ant_id, direction) do
-    velocity = Commands.move(direction)
+    execute(user, %MoveAnt{ant_id: ant_id, velocity: Commands.move(direction)})
+  end
 
+  def look(user, ant_id), do: execute(user, %Look{ant_id: ant_id})
+
+  def info(user, id), do: execute(user, %Info{id: id})
+
+  defp execute(user, command) do
     user
-    |> execute(%MoveAnt{ant_id: ant_id, velocity: velocity})
+    |> run(command)
     |> respond
   end
 
-  def look(user, ant_id) do
-    user
-    |> execute(%Look{ant_id: ant_id})
-    |> respond
-  end
-
-  def info(user, id) do
-    user
-    |> execute(%Info{id: id})
-    |> respond
-  end
-
-  defp execute(user, command), do: GenServer.call(EngineServer, {user, command})
+  defp run(user, command), do: GenServer.call(EngineServer, {user, command})
 
   defp respond({:ok, _}) do
     receive do
-      result -> result
+      {:ok, message} -> {:ok, message}
+      {:error, message} -> {:error, message}
     end
   end
 

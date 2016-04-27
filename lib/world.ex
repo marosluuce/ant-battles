@@ -10,15 +10,17 @@ defmodule World do
   end
 
   def spawn_ant(world, id) do
-    {found, nests} = world.nests |> Enum.partition(&(&1.id == id))
-
-    case found do
-      [nest] ->
-        spawn_ant(world, id, Nest.consume_food(nest), nests)
-      _ ->
-        {:error, :unknown_nest}
-    end
+    world
+    |> nests
+    |> Enum.partition(&(&1.id == id))
+    |> do_spawn_ant(world)
   end
+
+  defp do_spawn_ant({[nest], nests}, world) do
+    spawn_ant(world, nest.id, Nest.consume_food(nest), nests)
+  end
+
+  defp do_spawn_ant(_, _), do: {:error, :unknown_nest}
 
   def spawn_food(world, position, quantity \\ 1) do
     %{world | food: List.duplicate(position, quantity) ++ world.food}
@@ -29,29 +31,51 @@ defmodule World do
   end
 
   def move_ant(world, ant_id, direction) do
-    {found, ants} = world.ants |> Enum.partition(&(&1.id == ant_id))
-
-    case found do
-      [ant] ->
-        {:ok, %{world | ants: [Ant.move(ant, direction) | ants]}}
-      _ ->
-        {:error, :unknown_ant}
-    end
+    world
+    |> ants
+    |> Enum.partition(&(&1.id == ant_id))
+    |> do_move_ant(world, direction)
   end
 
+  defp do_move_ant({[ant], ants}, world, direction) do
+    {:ok, %{world | ants: [Ant.move(ant, direction) | ants]}}
+  end
+
+  defp do_move_ant(_, _, _), do: {:error, :unknown_ant}
+
+  def newest_ant(world, nest_id) do
+    world
+    |> ants_by_nest(nest_id)
+    |> Enum.max_by(&(&1.id))
+  end
+
+  def ant(world, id), do: world |> World.ants |> Enum.find(&(&1.id == id))
+
   def ants(%World{ants: ants}), do: ants
+
+  def ants_by_nest(world, nest_id) do
+    world
+    |> World.ants
+    |> Enum.filter(&(&1.nest_id == nest_id))
+  end
+
+  def nest(world, team), do: world |> World.nests |> Enum.find(&(&1.team == team))
 
   def nests(%World{nests: nests}), do: nests
 
   def food(%World{food: food}), do: food
 
-  defp spawn_ant(world, _, {:ok, nest}, nests) do
-    new_world =
-      %{world |
-        nests: [nest | nests],
-        ants: [%Ant{id: id(), nest_id: nest.id, pos: nest.pos, team: nest.team} | world.ants]}
+  def find(world, id) do
+    ants = world |> World.ants
+    nests = world |> World.nests
 
-    {:ok, new_world}
+    nests ++ ants |> Enum.find(&(&1.id == id))
+  end
+
+  defp spawn_ant(world, _, {:ok, nest}, nests) do
+    new_ant = %Ant{id: id(), nest_id: nest.id, pos: nest.pos, team: nest.team}
+
+    {:ok, %{world | nests: [nest | nests], ants: [new_ant | world.ants]}}
   end
 
   defp spawn_ant(_, _, {:error, _}, _) do

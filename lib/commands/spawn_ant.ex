@@ -3,19 +3,15 @@ defmodule SpawnAnt do
 end
 
 defimpl Command, for: SpawnAnt do
-  def execute(%SpawnAnt{nest_id: nest_id}, world) do
-    World.spawn_ant(world, nest_id)
-  end
+  def execute(%SpawnAnt{nest_id: nest_id}, world), do: World.spawn_ant(world, nest_id)
 
   def success(%SpawnAnt{nest_id: nest_id}, pid, world) do
-    [ant | _] = world
-    |> World.ants
-    |> Enum.filter(&(&1.nest_id == nest_id))
+    message = world
+    |> World.newest_ant(nest_id)
+    |> Message.details(world)
 
-    send pid, {:ok, Message.details(ant, world)}
+    send pid, {:ok, message}
   end
 
-  def failure(_, pid, _) do
-    send pid, {:error, :insufficient_food}
-  end
+  def failure(_, pid, _), do: send pid, {:error, :insufficient_food}
 end

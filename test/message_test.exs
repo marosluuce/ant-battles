@@ -6,7 +6,7 @@ defmodule MessageTest do
 
     assert Message.details(nest, %World{nests: [nest], ants: []}) == %{
       type: :nest,
-      location: {0, 0},
+      location: [0, 0],
       id: 1,
       team: "me",
       food: 5,
@@ -19,7 +19,7 @@ defmodule MessageTest do
 
     assert Message.details(ant, %World{ants: [ant]}) == %{
       type: :ant,
-      location: {0, 0},
+      location: [0, 0],
       id: 1,
       nest: 2,
       team: "me",
