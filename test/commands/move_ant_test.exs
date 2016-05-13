@@ -18,7 +18,7 @@ defmodule MoveAntTest do
 
     Command.success(command, self(), world)
 
-    message = Message.details(ant, world)
+    message = Message.with_surroundings(ant, world)
     assert_received {:ok, ^message}
   end
 

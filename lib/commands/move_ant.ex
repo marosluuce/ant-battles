@@ -10,7 +10,7 @@ defimpl Command, for: MoveAnt do
   def success(%MoveAnt{ant_id: ant_id}, pid, world) do
     message = world
     |> World.ant(ant_id)
-    |> Message.details(world)
+    |> Message.with_surroundings(world)
 
     send pid, {:ok, message}
   end

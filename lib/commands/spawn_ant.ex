@@ -8,7 +8,7 @@ defimpl Command, for: SpawnAnt do
   def success(%SpawnAnt{nest_id: nest_id}, pid, world) do
     message = world
     |> World.newest_ant(nest_id)
-    |> Message.details(world)
+    |> Message.with_surroundings(world)
 
     send pid, {:ok, message}
   end

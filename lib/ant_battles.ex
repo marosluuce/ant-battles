@@ -1,10 +1,16 @@
 defmodule AntBattles do
   use Application
 
-  def start(_type, [delay]) do
-    Engine.start_link(delay)
-    Plug.Adapters.Cowboy.http(Router, [])
+  def start(_type, [delay: delay]) do
+    import Supervisor.Spec, warn: false
 
-    Supervisor.start_link([], strategy: :one_for_one)
+    children = [
+      worker(Engine, [delay]),
+      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000])
+    ]
+
+    opts = [strategy: :one_for_one]
+
+    Supervisor.start_link(children, opts)
   end
 end

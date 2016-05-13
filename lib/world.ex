@@ -5,9 +5,11 @@ defmodule World do
     if registered?(world, team) do
       {:error, :name_taken}
     else
-      {:ok, Map.update!(world, :nests, &([%Nest{team: team} | &1]))}
+      {:ok, %{world | nests: add_nest_by_team(team, world.nests)}}
     end
   end
+
+  defp add_nest_by_team(team, nests), do: [%Nest{team: team} | nests]
 
   def spawn_ant(world, id) do
     world
@@ -26,8 +28,52 @@ defmodule World do
     %{world | food: List.duplicate(position, quantity) ++ world.food}
   end
 
-  def pick_up_food(world, position) do
-    %{world | food: List.delete(world.food, position)}
+  def pick_up_food(world, position), do: %{world | food: List.delete(world.food, position)}
+
+  def surroundings(world, id) do
+    world
+    |> find(id)
+    |> find_surroundings(world)
+  end
+
+  defp find_surroundings(%{pos: pos}, world) do
+    result = pos
+    |> neighbors
+    |> find_neighbors(world)
+    |> group_by_position
+    |> convert_position_keys_to_direction(pos)
+
+    empty = %{n: [], s: [], e: [], w: [], ne: [], nw: [], se: [], sw: []}
+
+    {:ok, Map.merge(empty, result)}
+  end
+  defp find_surroundings(_, _), do: {:error, :id_not_found}
+
+  defp neighbors({x, y}) do
+    [{x-1, y-1}, {x, y-1}, {x+1, y-1},
+     {x-1, y},             {x+1, y},
+     {x-1, y+1}, {x, y+1}, {x+1, y+1}]
+  end
+
+  defp find_neighbors(positions, world)  do
+    ants = world |> World.ants
+    nests = world |> World.nests
+
+    ants ++ nests
+    |> Enum.filter(&(&1.pos in positions))
+  end
+
+  defp group_by_position(entities), do: Enum.group_by(entities, &(&1.pos))
+
+  defp convert_position_keys_to_direction(neighbors, pos) do
+    neighbors
+    |> Enum.map(&(convert_position(pos, &1)))
+    |> Enum.into(%{})
+  end
+
+  defp convert_position({x1, y1}, {{x2, y2}, entities}) do
+    {:ok, direction} = Move.to_dir({x2 - x1, y2 - y1})
+    {direction, entities}
   end
 
   def move_ant(world, ant_id, direction) do
@@ -40,7 +86,6 @@ defmodule World do
   defp do_move_ant({[ant], ants}, world, direction) do
     {:ok, %{world | ants: [Ant.move(ant, direction) | ants]}}
   end
-
   defp do_move_ant(_, _, _), do: {:error, :unknown_ant}
 
   def newest_ant(world, nest_id) do
@@ -77,10 +122,7 @@ defmodule World do
 
     {:ok, %{world | nests: [nest | nests], ants: [new_ant | world.ants]}}
   end
-
-  defp spawn_ant(_, _, {:error, _}, _) do
-    {:error, :insufficient_food}
-  end
+  defp spawn_ant(_, _, {:error, _}, _), do: {:error, :insufficient_food}
 
   defp registered?(world, team) do
     world.nests

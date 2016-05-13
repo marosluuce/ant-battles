@@ -27,7 +27,6 @@ defmodule MessageTest do
     }
   end
 
-  @tag :skip
   test "ant details with surroundings" do
     ant_1 = %Ant{pos: {0, 0}, id: 1, nest_id: 2, team: "me", has_food: false}
     ant_2 = %Ant{pos: {1, 1}, id: 2, nest_id: 2, team: "me", has_food: false}
@@ -35,7 +34,7 @@ defmodule MessageTest do
 
     assert Message.with_surroundings(ant_1, world) == %{
       type: :ant,
-      location: {0, 0},
+      location: [0, 0],
       id: 1,
       nest: 2,
       team: "me",

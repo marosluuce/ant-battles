@@ -8,16 +8,15 @@ defmodule AntBattles.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps,
-     aliases: [test: "test --no-start",
-               run: "run --no-halt"]]
+     aliases: [test: "test --no-start"]]
   end
 
   # Configuration for the OTP application
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger],
-     mod: {AntBattles, [1000]}]
+    [applications: [:logger, :cowboy, :plug],
+     mod: {AntBattles, [delay: 1000]}]
   end
 
   # Dependencies can be Hex packages:

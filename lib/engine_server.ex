@@ -53,7 +53,9 @@ defmodule EngineServer do
 
   defp unique_user?(instructions, user) do
     instructions
-    |> Enum.map(fn {user, _, _} -> user end)
+    |> Enum.map(&extract_user/1)
     |> Enum.member?(user)
   end
+
+  defp extract_user({user, _, _}), do: user
 end

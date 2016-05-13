@@ -27,19 +27,19 @@ defmodule Message do
   end
 
   def with_surroundings(ant = %Ant{}, world) do
-    surroundings = %{
-      n: [],
-      s: [],
-      e: [],
-      w: [],
-      ne: [],
-      nw: [],
-      se: [],
-      sw: []
-    }
+    {:ok, surroundings} = world
+    |> World.surroundings(ant.id)
+
+    detailed = surroundings
+    |> Enum.map(&(detailed(&1, world)))
+    |> Enum.into(%{})
 
     ant
     |> details(world)
-    |> Map.put(:surroundings, surroundings)
+    |> Map.put(:surroundings, detailed)
+  end
+
+  defp detailed({dir, entities}, world) do
+    {dir, Enum.map(entities, &(details(&1, world)))}
   end
 end

@@ -98,4 +98,18 @@ defmodule WorldTest do
     assert World.find(world, 1) == nest
     assert World.find(world, 2) == ant
   end
+
+  test "get surroundings" do
+    nest = %Nest{id: 1, pos: {0, 0}}
+    ant = %Ant{id: 2, pos: {1, 0}}
+    world = %World{ants: [ant], nests: [nest]}
+
+    {:ok, %{e: found}} = World.surroundings(world, 1)
+
+    assert found == [ant]
+  end
+
+  test "get surroundings can fail" do
+    assert World.surroundings(%World{}, 1) == {:error, :id_not_found}
+  end
 end

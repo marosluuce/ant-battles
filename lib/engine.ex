@@ -1,14 +1,10 @@
 defmodule Engine do
   defstruct delay: 1000, instructions: [], world: %World{}
 
-  def start(delay) do
-    GenServer.start(EngineServer, delay, name: EngineServer)
-    start_tick()
-  end
-
   def start_link(delay) do
-    GenServer.start_link(EngineServer, delay, name: EngineServer)
+    result = GenServer.start_link(EngineServer, delay, name: EngineServer)
     start_tick()
+    result
   end
 
   def join(user, team), do: execute(user, %Join{team: team})
@@ -37,7 +33,6 @@ defmodule Engine do
       {:error, message} -> {:error, message}
     end
   end
-
   defp respond(error), do: error
 
   defp start_tick, do: send EngineServer, :tick
