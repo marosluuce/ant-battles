@@ -114,7 +114,7 @@ defmodule World do
     ants = world |> World.ants
     nests = world |> World.nests
 
-    nests ++ ants |> Enum.find(&(&1.id == id))
+    nests ++ ants |> Enum.find({:error, :not_found}, &(&1.id == id))
   end
 
   defp spawn_ant(world, _, {:ok, nest}, nests) do

@@ -3,6 +3,10 @@ defmodule EngineServer do
 
   def init(delay), do: {:ok, %Engine{delay: delay}}
 
+  def handle_call(:get_world, _, state = %Engine{world: world}) do
+    {:reply, world, state}
+  end
+
   def handle_call({:enqueue, command}, {pid, _}, state) do
     {pid, command}
     |> enqueue_instruction(state)

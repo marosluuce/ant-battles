@@ -17,8 +17,18 @@ defmodule Engine do
 
   def look(ant_id), do: execute(%Look{ant_id: ant_id})
 
-  def info(id), do: execute(%Info{id: id})
+  def info(id) do
+    world = get_world()
 
+    world
+    |> World.find(id)
+    |> format_info(world)
+  end
+
+  defp format_info({:error, :not_found}, _), do: {:error, :invalid_id}
+  defp format_info(entity, world), do: {:ok, Message.details(entity, world)}
+
+  defp get_world, do: GenServer.call(EngineServer, :get_world)
 
   defp execute(command) do
     command

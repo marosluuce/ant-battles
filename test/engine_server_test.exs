@@ -41,6 +41,13 @@ defmodule EngineServerTest do
     assert state.instructions == [{self(), command}]
   end
 
+  test "gets current world" do
+    engine = %Engine{}
+
+    assert {:reply, %World{}, engine} ==
+      EngineServer.handle_call(:get_world, {self(), :ref}, engine)
+  end
+
   test "tick clears the command queue" do
     engine = %Engine{instructions: [{self(), %Noop{}}]}
     {:noreply, state} =
