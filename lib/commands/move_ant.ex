@@ -3,6 +3,8 @@ defmodule MoveAnt do
 end
 
 defimpl Command, for: MoveAnt do
+  def id(%MoveAnt{ant_id: ant_id}), do: ant_id
+
   def execute(%MoveAnt{ant_id: ant_id, velocity: velocity}, world) do
     World.move_ant(world, ant_id, velocity)
   end

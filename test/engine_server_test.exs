@@ -7,31 +7,42 @@ defmodule EngineServerTest do
     assert state == %Engine{delay: 1}
   end
 
-  test "queues a command" do
+  test "enqueues a command" do
     command = %Noop{}
+
     {:reply, reply, state} =
-      EngineServer.handle_call({:me, command}, {self(), :ref}, %Engine{})
+      EngineServer.handle_call({:enqueue, command}, {self(), :ref}, %Engine{})
 
     assert reply == {:ok, :enqueued}
-    assert state.instructions == [{:me, self(), command}]
+    assert state.instructions == [{self(), command}]
   end
 
-  test "only queues one command per user" do
-    command_1 = %Noop{}
-    command_2 = %Noop{}
+  test "enqueues unique commands" do
+    command_1 = %Noop{id: 1}
+    command_2 = %Noop{id: 2}
 
-    {:reply, _, state} =
-      EngineServer.handle_call({:me, command_1}, {self(), :ref}, %Engine{})
+    engine = %Engine{instructions: [{self(), command_1}]}
+
+    {:reply, reply, state} =
+      EngineServer.handle_call({:enqueue, command_2}, {self(), :ref}, engine)
+
+    assert reply == {:ok, :enqueued}
+    assert state.instructions == [{self(), command_1}, {self(), command_2}]
+  end
+
+  test "does not enqueue duplicate commands" do
+    command = %Noop{id: 1}
+    engine = %Engine{instructions: [{self(), command}]}
 
     {:reply, error, state} =
-      EngineServer.handle_call({:me, command_2}, {self(), :ref}, state)
+      EngineServer.handle_call({:enqueue, command}, {self(), :ref}, engine)
 
     assert error == {:error, :already_enqueued}
-    assert state.instructions == [{:me, self(), command_1}]
+    assert state.instructions == [{self(), command}]
   end
 
   test "tick clears the command queue" do
-    engine = %Engine{instructions: [{:me, self(), %Noop{}}]}
+    engine = %Engine{instructions: [{self(), %Noop{}}]}
     {:noreply, state} =
       EngineServer.handle_cast(:tick, engine)
 
@@ -39,21 +50,21 @@ defmodule EngineServerTest do
   end
 
   test "known commands succeed" do
-    engine = %Engine{instructions: [{:me, self(), %Noop{}}]}
+    engine = %Engine{instructions: [{self(), %Noop{}}]}
     EngineServer.handle_cast(:tick, engine)
 
     assert_received {:ok, :ok}
   end
 
   test "unknown commands error" do
-    EngineServer.handle_cast(:tick, %Engine{instructions: [{:me, self(), :unknown}]})
+    EngineServer.handle_cast(:tick, %Engine{instructions: [{self(), :unknown}]})
 
     assert_received {:error, :unknown_command}
   end
 
   test "tick executes queued commands" do
     initial_world = %World{}
-    instruction = {:me, self(), %Join{team: "name"}}
+    instruction = {self(), %Join{team: "name"}}
     engine = %Engine{world: initial_world, instructions: [instruction]}
 
     {:noreply, %Engine{world: updated_world}} = EngineServer.handle_cast(:tick, engine)

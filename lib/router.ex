@@ -9,8 +9,8 @@ defmodule Router do
   end
 
   get "/join/:team" do
-    conn.remote_ip
-    |> Engine.join(team)
+    team
+    |> Engine.join
     |> build_response
     |> respond(conn)
   end
@@ -18,8 +18,8 @@ defmodule Router do
   get "/:nest_id/spawn" do
     {converted_id, _} = Integer.parse(nest_id)
 
-    conn.remote_ip
-    |> Engine.spawn_ant(converted_id)
+    converted_id
+    |> Engine.spawn_ant
     |> build_response
     |> respond(conn)
   end
@@ -27,8 +27,8 @@ defmodule Router do
   get "/:ant_id/look" do
     {converted_id, _} = Integer.parse(ant_id)
 
-    conn.remote_ip
-    |> Engine.look(converted_id)
+    converted_id
+    |> Engine.look
     |> build_response
     |> respond(conn)
   end
@@ -36,8 +36,8 @@ defmodule Router do
   get "/:ant_id/move/:direction" do
     {converted_id, _} = Integer.parse(ant_id)
 
-    conn.remote_ip
-    |> Engine.move_ant(converted_id, direction)
+    converted_id
+    |> Engine.move_ant(direction)
     |> build_response
     |> respond(conn)
   end
@@ -45,8 +45,8 @@ defmodule Router do
   get "/:id/info" do
     {converted_id, _} = Integer.parse(id)
 
-    conn.remote_ip
-    |> Engine.info(converted_id)
+    converted_id
+    |> Engine.info
     |> build_response
     |> respond(conn)
   end

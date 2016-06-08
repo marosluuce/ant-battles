@@ -3,6 +3,8 @@ defmodule Look do
 end
 
 defimpl Command, for: Look do
+  def id(%Look{ant_id: ant_id}), do: ant_id
+
   def execute(%Look{ant_id: ant_id}, world) do
     not_found = world
     |> World.ant(ant_id)

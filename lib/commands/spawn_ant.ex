@@ -3,6 +3,8 @@ defmodule SpawnAnt do
 end
 
 defimpl Command, for: SpawnAnt do
+  def id(%SpawnAnt{nest_id: nest_id}), do: nest_id
+
   def execute(%SpawnAnt{nest_id: nest_id}, world), do: World.spawn_ant(world, nest_id)
 
   def success(%SpawnAnt{nest_id: nest_id}, pid, world) do

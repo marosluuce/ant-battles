@@ -7,25 +7,26 @@ defmodule Engine do
     result
   end
 
-  def join(user, team), do: execute(user, %Join{team: team})
+  def join(team), do: execute(%Join{team: team})
 
-  def spawn_ant(user, nest_id), do: execute(user, %SpawnAnt{nest_id: nest_id})
+  def spawn_ant(nest_id), do: execute(%SpawnAnt{nest_id: nest_id})
 
-  def move_ant(user, ant_id, direction) do
-    execute(user, %MoveAnt{ant_id: ant_id, velocity: Commands.move(direction)})
+  def move_ant(ant_id, direction) do
+    execute(%MoveAnt{ant_id: ant_id, velocity: Commands.move(direction)})
   end
 
-  def look(user, ant_id), do: execute(user, %Look{ant_id: ant_id})
+  def look(ant_id), do: execute(%Look{ant_id: ant_id})
 
-  def info(user, id), do: execute(user, %Info{id: id})
+  def info(id), do: execute(%Info{id: id})
 
-  defp execute(user, command) do
-    user
-    |> run(command)
+
+  defp execute(command) do
+    command
+    |> enqueue
     |> respond
   end
 
-  defp run(user, command), do: GenServer.call(EngineServer, {user, command})
+  defp enqueue(command), do: GenServer.call(EngineServer, {:enqueue, command})
 
   defp respond({:ok, _}) do
     receive do

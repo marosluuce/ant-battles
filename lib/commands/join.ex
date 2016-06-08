@@ -3,6 +3,8 @@ defmodule Join do
 end
 
 defimpl Command, for: Join do
+  def id(%Join{team: team}), do: team
+
   def execute(%Join{team: team}, world), do: World.register(world, team)
 
   def success(%Join{team: team}, pid, world) do

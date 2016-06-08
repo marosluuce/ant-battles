@@ -3,8 +3,8 @@ defmodule EngineServer do
 
   def init(delay), do: {:ok, %Engine{delay: delay}}
 
-  def handle_call({user, command}, {pid, _}, state) do
-    {user, pid, command}
+  def handle_call({:enqueue, command}, {pid, _}, state) do
+    {pid, command}
     |> enqueue_instruction(state)
     |> send_enqueue_response(state)
   end
@@ -29,21 +29,21 @@ defmodule EngineServer do
     new_world
   end
 
-  defp execute(instruction = {_, _, command}, world) do
+  defp execute(instruction = {_, command}, world) do
     case Command.execute(command, world) do
       {:ok, new_world} -> {{:ok, instruction}, new_world}
       _                -> {{:error, instruction}, world}
     end
   end
 
-  defp notify({:ok, {_, pid, command}}, world), do: Command.success(command, pid, world)
-  defp notify({:error, {_, pid, command}}, world), do: Command.failure(command, pid, world)
+  defp notify({:ok, {pid, command}}, world), do: Command.success(command, pid, world)
+  defp notify({:error, {pid, command}}, world), do: Command.failure(command, pid, world)
 
-  defp enqueue_instruction({user, pid, command}, state) do
-    if unique_user?(state.instructions, user) do
+  defp enqueue_instruction(instruction, state) do
+    if exists?(state.instructions, instruction) do
       {:error, :already_enqueued}
     else
-      {:ok, append_instruction(state, {user, pid, command})}
+      {:ok, append_instruction(state, instruction)}
     end
   end
 
@@ -51,11 +51,10 @@ defmodule EngineServer do
     %{state | instructions: state.instructions ++ [instruction]}
   end
 
-  defp unique_user?(instructions, user) do
+  defp exists?(instructions, {_, command}) do
     instructions
-    |> Enum.map(&extract_user/1)
-    |> Enum.member?(user)
+    |> Enum.map(&(elem(&1, 1)))
+    |> Enum.map(&Command.id/1)
+    |> Enum.member?(Command.id(command))
   end
-
-  defp extract_user({user, _, _}), do: user
 end

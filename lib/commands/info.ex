@@ -3,6 +3,8 @@ defmodule Info do
 end
 
 defimpl Command, for: Info do
+  def id(%Info{id: id}), do: id
+
   def execute(%Info{id: id}, world) do
     not_found = world
     |> World.find(id)
