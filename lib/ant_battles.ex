@@ -6,11 +6,15 @@ defmodule AntBattles do
 
     children = [
       worker(Engine, [delay]),
-      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000])
+      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch()])
     ]
 
     opts = [strategy: :one_for_one]
 
     Supervisor.start_link(children, opts)
+  end
+
+  def dispatch do
+    [{:_, [{"/ws", Websocket, []}, {:_, Plug.Adapters.Cowboy.Handler, {Router, []}}]}]
   end
 end

@@ -3,7 +3,7 @@ defmodule WorldTest do
 
   test "registering creates a nest" do
     {:ok, world} = %World{} |> World.register("name")
-    assert World.nests(world) == [%Nest{team: "name"}]
+    assert [%Nest{team: "name"}] = World.nests(world)
   end
 
   test "registering does not create duplicate " do

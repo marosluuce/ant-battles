@@ -17,6 +17,8 @@ defmodule Engine do
 
   def look(ant_id), do: execute(%Look{ant_id: ant_id})
 
+  def observe, do: execute(%Observe{pid: self()})
+
   def info(id) do
     world = get_world()
 

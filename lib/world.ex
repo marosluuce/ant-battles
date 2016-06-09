@@ -9,7 +9,7 @@ defmodule World do
     end
   end
 
-  defp add_nest_by_team(team, nests), do: [%Nest{team: team} | nests]
+  defp add_nest_by_team(team, nests), do: [%Nest{id: id(), team: team} | nests]
 
   def spawn_ant(world, id) do
     world
