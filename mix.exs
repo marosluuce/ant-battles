@@ -16,7 +16,7 @@ defmodule AntBattles.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger, :cowboy, :plug],
-     mod: {AntBattles, [delay: 1000]}]
+     mod: {AntBattles, [delay: 200]}]
   end
 
   # Dependencies can be Hex packages:

@@ -6,7 +6,7 @@ defmodule AntBattles do
 
     children = [
       worker(Engine, [delay]),
-      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch()])
+      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch(), acceptors: 1000])
     ]
 
     opts = [strategy: :one_for_one]

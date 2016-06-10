@@ -19,16 +19,18 @@ defmodule Engine do
 
   def observe, do: execute(%Observe{pid: self()})
 
+  def add_food(location, quantity), do: execute(%AddFood{location: location, quantity: quantity})
+
   def info(id) do
     world = get_world()
 
     world
     |> World.find(id)
-    |> format_info(world)
+    |> format_info
   end
 
-  defp format_info({:error, :not_found}, _), do: {:error, :invalid_id}
-  defp format_info(entity, world), do: {:ok, Message.details(entity, world)}
+  defp format_info({:error, :not_found}), do: {:error, :invalid_id}
+  defp format_info(entity), do: {:ok, Message.details(entity)}
 
   defp get_world, do: GenServer.call(EngineServer, :get_world)
 

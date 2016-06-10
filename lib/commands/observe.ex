@@ -19,11 +19,16 @@ defimpl Command, for: Observe do
   def failure(_, pid, _), do: send pid, {:error, :failed_to_observe}
 
   defp ants(world) do
-    Enum.map(world.ants, &(Message.details(&1, world)))
+    world
+    |> World.ants
+    |> Enum.map(&Message.details/1)
   end
 
   defp food(world) do
-    Enum.map(world.food, &Tuple.to_list/1)
+    world.food
+    |> Enum.filter(fn {_, quantity} -> quantity > 0 end)
+    |> Enum.map(fn f -> Kernel.elem(f, 0) end)
+    |> Enum.map(&Tuple.to_list/1)
   end
 end
 

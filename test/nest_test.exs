@@ -1,18 +1,19 @@
 defmodule NestTest do
   use ExUnit.Case, async: true
 
-  test "consuming food decreases food" do
-    {:ok, nest} = %Nest{food: 5} |> Nest.consume_food
-    assert nest.food == 4
+  test "spawning an ant decreases food" do
+    assert %Nest{food: 4} = Nest.spawn_ant(%Nest{food: 5})
   end
 
-  test "cannot consume more food than available" do
-    result = %Nest{food: 0} |> Nest.consume_food
-    assert result == {:error, :insufficient_food}
+  test "spawning an ant increases ant count" do
+    assert %Nest{ants: 1} = Nest.spawn_ant(%Nest{food: 5})
+  end
+
+  test "spawning an ant can fail" do
+    assert {:error, :insufficient_food} = Nest.spawn_ant(%Nest{food: 0})
   end
 
   test "delivering food increases food" do
-    nest = %Nest{food: 0} |> Nest.deliver_food
-    assert nest.food == 1
+    assert %Nest{food: 1} = Nest.deliver_food(%Nest{food: 0})
   end
 end

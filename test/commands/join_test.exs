@@ -13,7 +13,7 @@ defmodule JoinTest do
     Command.success(%Join{team: "name"}, self(), world)
 
     [nest] = world |> World.nests
-    message = Message.details(nest, world)
+    message = Message.details(nest)
     assert_received {:ok, ^message}
   end
 

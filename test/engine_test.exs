@@ -31,4 +31,8 @@ defmodule EngineTest do
     {:ok, %{id: nest_id}} = Engine.join("name")
     assert {:ok, %{id: ^nest_id}} = Engine.info(nest_id)
   end
+
+  test "a user can add food" do
+    assert {:ok, :added_food} = Engine.add_food({0, 0}, 1)
+  end
 end

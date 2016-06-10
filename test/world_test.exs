@@ -2,31 +2,26 @@ defmodule WorldTest do
   use ExUnit.Case, async: true
 
   test "registering creates a nest" do
-    {:ok, world} = %World{} |> World.register("name")
+    {:ok, world} = World.register(%World{}, "name")
     assert [%Nest{team: "name"}] = World.nests(world)
   end
 
   test "registering does not create duplicate " do
-    {:ok, world} = %World{} |> World.register("name")
-    assert World.register(world, "name") == {:error, :name_taken}
+    {:ok, world} = World.register(%World{}, "name")
+    assert {:error, :name_taken} = World.register(world, "name")
   end
 
   test "spawning an ant" do
-    nest = %Nest{id: 1}
-    {:ok, world} = %World{nests: [nest]} |> World.spawn_ant(nest.id)
+    {:ok, world} = %World{nests: [%Nest{id: 1}]} |> World.spawn_ant(1)
 
-    [ant] = world |> World.ants
-
-    assert ant.nest_id == nest.id
+    assert [%Ant{nest_id: 1}] = world |> World.ants
   end
 
   test "spawned ants have unique ids" do
-    nest = %Nest{}
+    {:ok, world} = World.spawn_ant(%World{nests: [%Nest{id: 1}]}, 1)
+    {:ok, world} = World.spawn_ant(world, 1)
 
-    [ant_1, ant_2] =
-      with {:ok, world} <- World.spawn_ant(%World{nests: [nest]}, nest.id),
-           {:ok, world} <- World.spawn_ant(world, nest.id),
-        do: world |> World.ants
+    [ant_1, ant_2] = world |> World.ants
 
     refute ant_1.id == ant_2.id
   end
@@ -39,30 +34,49 @@ defmodule WorldTest do
   end
 
   test "spawning errors when name doesn't exist" do
-    assert World.spawn_ant(%World{}, 1) == {:error, :unknown_nest}
+    assert {:error, :unknown_nest} = World.spawn_ant(%World{}, 1)
   end
 
   test "moving an ant" do
     {:ok, world} = %World{ants: [%Ant{id: 1}]}
     |> World.move_ant(1, {0, 1})
 
-    [ant] = world |> World.ants
-    assert ant.pos == {0, 1}
+    assert [%Ant{pos: {0, 1}}] = world |> World.ants
+  end
+
+  test "moving an ant over food picks up food" do
+    world = %World{ants: [%Ant{id: 1, pos: {0, 0}}]}
+    world = World.spawn_food(world, {1, 1}, 1)
+    {:ok, world} = World.move_ant(world, 1, {1, 1})
+
+    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
+    assert %{{1, 1} => 0} = world |> World.food
+  end
+
+  test "moving an ant with food over a nest drops food" do
+    world = %World{
+      ants: [%Ant{id: 2, nest_id: 1, pos: {0, 1}, has_food: true}],
+      nests: [%Nest{id: 1, food: 0}]
+    }
+
+    {:ok, world} = World.move_ant(world, 2, {0, -1})
+
+    assert [%Ant{has_food: false}] = world |> World.ants
+    assert [%Nest{food: 1}] = world |> World.nests
   end
 
   test "moving errors when ant does not exist" do
-    result = %World{} |> World.move_ant(1, {0, 1})
-    assert result == {:error, :unknown_ant}
+    assert {:error, :unknown_ant} = %World{} |> World.move_ant(1, {0, 1})
   end
 
   test "spawning food" do
     food = %World{} |> World.spawn_food({2, 3}) |> World.food
-    assert food == [{2, 3}]
+    assert %{{2, 3} => 1} = food
   end
 
   test "spawning multiple food" do
     food = %World{} |> World.spawn_food({2, 3}, 3) |> World.food
-    assert food == [{2, 3}, {2, 3}, {2, 3}]
+    assert %{{2, 3} => 3} = food
   end
 
   test "picking up food" do
@@ -71,7 +85,7 @@ defmodule WorldTest do
     |> World.pick_up_food({2, 3})
     |> World.food
 
-    assert food == [{2, 3}, {2, 3}]
+    assert %{{2, 3} => 2} = food
   end
 
   test "finding an ant" do

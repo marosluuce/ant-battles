@@ -1,21 +1,16 @@
 defmodule Message do
-  def details(nest = %Nest{}, world) do
-    num_ants = world
-    |> World.ants
-    |> Enum.filter(&(&1.nest_id == nest.id))
-    |> Enum.count
-
+  def details(nest = %Nest{}) do
     %{
       type: :nest,
       location: nest.pos |> Tuple.to_list,
       food: nest.food,
       team: nest.team,
       id: nest.id,
-      ants: num_ants
+      ants: nest.ants
     }
   end
 
-  def details(ant = %Ant{}, _) do
+  def details(ant = %Ant{}) do
     %{
       type: :ant,
       location: ant.pos |> Tuple.to_list,
@@ -31,15 +26,15 @@ defmodule Message do
     |> World.surroundings(ant.id)
 
     detailed = surroundings
-    |> Enum.map(&(detailed(&1, world)))
+    |> Enum.map(&detailed/1)
     |> Enum.into(%{})
 
     ant
-    |> details(world)
+    |> details
     |> Map.put(:surroundings, detailed)
   end
 
-  defp detailed({dir, entities}, world) do
-    {dir, Enum.map(entities, &(details(&1, world)))}
+  defp detailed({dir, entities}) do
+    {dir, Enum.map(entities, &details/1)}
   end
 end

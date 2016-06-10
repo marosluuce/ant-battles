@@ -4,27 +4,27 @@ defmodule MessageTest do
   test "nest details" do
     nest = %Nest{id: 1, team: "me", pos: {0, 0}, food: 5}
 
-    assert Message.details(nest, %World{nests: [nest], ants: []}) == %{
+    assert %{
       type: :nest,
       location: [0, 0],
       id: 1,
       team: "me",
       food: 5,
       ants: 0
-    }
+    } == Message.details(nest)
   end
 
   test "ant details" do
     ant = %Ant{pos: {0, 0}, id: 1, nest_id: 2, team: "me", has_food: false}
 
-    assert Message.details(ant, %World{ants: [ant]}) == %{
+    assert %{
       type: :ant,
       location: [0, 0],
       id: 1,
       nest: 2,
       team: "me",
       got_food: false
-    }
+    } == Message.details(ant)
   end
 
   test "ant details with surroundings" do
@@ -32,7 +32,7 @@ defmodule MessageTest do
     ant_2 = %Ant{pos: {1, 1}, id: 2, nest_id: 2, team: "me", has_food: false}
     world = %World{ants: [ant_1, ant_2]}
 
-    assert Message.with_surroundings(ant_1, world) == %{
+    assert %{
       type: :ant,
       location: [0, 0],
       id: 1,
@@ -44,11 +44,11 @@ defmodule MessageTest do
         s: [],
         e: [],
         w: [],
-        ne: [Message.details(ant_2, world)],
+        ne: [Message.details(ant_2)],
         nw: [],
         se: [],
         sw: []
       }
-    }
+    } == Message.with_surroundings(ant_1, world)
   end
 end
