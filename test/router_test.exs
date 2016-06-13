@@ -5,7 +5,7 @@ defmodule RouterTest do
   @opts Router.init([])
 
   setup do
-    Engine.start_link(1)
+    Engine.start_link(delay: 1)
     :ok
   end
 

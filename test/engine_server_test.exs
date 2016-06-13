@@ -2,7 +2,7 @@ defmodule EngineServerTest do
   use ExUnit.Case, async: true
 
   test "a new server is an empty world" do
-    {:ok, state} = EngineServer.init(1)
+    {:ok, state} = EngineServer.init(%Engine{delay: 1})
 
     assert state == %Engine{delay: 1}
   end

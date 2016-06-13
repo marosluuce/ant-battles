@@ -1,9 +1,12 @@
 defmodule Engine do
-  defstruct delay: 1000, instructions: [], world: %World{}
+  defstruct delay: 200, instructions: [], world: %World{}
 
-  def start_link(delay) do
-    result = GenServer.start_link(EngineServer, delay, name: EngineServer)
+  def start_link(args) do
+    delay = Keyword.get(args, :delay, 200)
+
+    result = GenServer.start_link(EngineServer, %Engine{delay: delay, world: World.new(args)}, name: EngineServer)
     start_tick()
+
     result
   end
 

@@ -1,6 +1,17 @@
 defmodule WorldTest do
   use ExUnit.Case, async: true
 
+  test "can create a new world" do
+    assert %World{} = World.new([])
+  end
+
+  test "a new world has food" do
+    world = World.new(food_stacks: 1, food_stack_size: 10)
+
+    assert [{_, _}] = world |> World.food |> Map.keys
+    assert [10] = world |> World.food |> Map.values
+  end
+
   test "registering creates a nest" do
     {:ok, world} = World.register(%World{}, "name")
     assert [%Nest{team: "name"}] = World.nests(world)

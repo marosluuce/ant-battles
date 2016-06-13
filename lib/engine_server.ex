@@ -1,7 +1,7 @@
 defmodule EngineServer do
   use GenServer
 
-  def init(delay), do: {:ok, %Engine{delay: delay}}
+  def init(engine), do: {:ok, engine}
 
   def handle_call(:get_world, _, state = %Engine{world: world}) do
     {:reply, world, state}

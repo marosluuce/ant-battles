@@ -2,7 +2,7 @@ defmodule WebsocketTest do
   use ExUnit.Case
 
   setup do
-    Engine.start_link(1)
+    Engine.start_link(delay: 1, food_stacks: 0)
     :ok
   end
 

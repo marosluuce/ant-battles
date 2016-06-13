@@ -1,6 +1,31 @@
 defmodule World do
   defstruct nests: [], ants: [], food: %{}
 
+  def new(args) do
+    food_stacks = Keyword.get(args, :food_stacks, 0)
+    food_stack_size = Keyword.get(args, :food_stack_size, 0)
+
+    add_initial_food(%World{}, food_stacks, food_stack_size)
+  end
+
+  defp add_initial_food(world, 0, _), do: world
+  defp add_initial_food(world, stacks, stack_size) do
+    (1..stacks)
+    |> Enum.map(fn _ -> random_location() end)
+    |> Enum.reduce(world, fn (location, world) -> spawn_food(world, location, stack_size) end)
+  end
+
+  defp random_location do
+    x = :rand.uniform(50) - 25
+    y = :rand.uniform(50) - 25
+
+    if {x, y} == {0, 0} do
+      random_location()
+    else
+      {x, y}
+    end
+  end
+
   def register(world, team) do
     if registered?(world, team) do
       {:error, :name_taken}
