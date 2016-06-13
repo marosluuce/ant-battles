@@ -27,10 +27,18 @@ defmodule MessageTest do
     } == Message.details(ant)
   end
 
+  test "food details" do
+    assert %{
+      type: :food,
+      location: [0, 0],
+      quantity: 2
+    } == Message.details(%Food{pos: {0, 0}, quantity: 2})
+  end
+
   test "ant details with surroundings" do
     ant_1 = %Ant{pos: {0, 0}, id: 1, nest_id: 2, team: "me", has_food: false}
     ant_2 = %Ant{pos: {1, 1}, id: 2, nest_id: 2, team: "me", has_food: false}
-    world = %World{ants: [ant_1, ant_2]}
+    world = %World{ants: [ant_1, ant_2], food: %{{0, 1} => 1}}
 
     assert %{
       type: :ant,
@@ -40,7 +48,7 @@ defmodule MessageTest do
       team: "me",
       got_food: false,
       surroundings: %{
-        n: [],
+        n: [Message.details(%Food{pos: {0, 1}, quantity: 1})],
         s: [],
         e: [],
         w: [],

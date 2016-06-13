@@ -4,7 +4,7 @@ defmodule AddFoodTest do
   test "it adds food to the world" do
     {:ok, world} = Command.execute(%AddFood{location: {0, 0}, quantity: 5}, %World{})
 
-    assert %{{0, 0} => 5} = world |> World.food
+    assert [%Food{pos: {0, 0}, quantity: 5}] = world |> World.food
   end
 
   test "success sends a message" do

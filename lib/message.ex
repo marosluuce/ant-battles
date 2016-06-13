@@ -21,6 +21,14 @@ defmodule Message do
     }
   end
 
+  def details(food = %Food{}) do
+    %{
+      type: :food,
+      location: food.pos |> Tuple.to_list,
+      quantity: food.quantity
+    }
+  end
+
   def with_surroundings(ant = %Ant{}, world) do
     {:ok, surroundings} = world
     |> World.surroundings(ant.id)

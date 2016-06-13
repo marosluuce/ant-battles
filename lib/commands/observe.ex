@@ -28,8 +28,7 @@ defimpl Command, for: Observe do
   defp food(world) do
     world
     |> World.food
-    |> Enum.filter(fn {_, quantity} -> quantity > 0 end)
-    |> Enum.map(fn f -> Kernel.elem(f, 0) end)
+    |> Enum.map(&(&1.pos))
     |> Enum.map(&Tuple.to_list/1)
   end
 

@@ -89,8 +89,9 @@ defmodule World do
   defp find_neighbors(positions, world)  do
     ants = world |> World.ants
     nests = world |> World.nests
+    food = world |> World.food
 
-    ants ++ nests
+    ants ++ nests ++ food
     |> Enum.filter(&(&1.pos in positions))
   end
 
@@ -194,7 +195,13 @@ defmodule World do
 
   def nests(%World{nests: nests}), do: nests
 
-  def food(%World{food: food}), do: food
+  def food(%World{food: food}) do
+    Enum.filter_map(
+      food,
+      fn {location, quantity} -> quantity > 0 end,
+      fn {location, quantity} -> %Food{pos: location, quantity: quantity} end
+    )
+  end
 
   def find(world, id) do
     ants = world |> World.ants

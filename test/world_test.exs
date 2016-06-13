@@ -8,8 +8,7 @@ defmodule WorldTest do
   test "a new world has food" do
     world = World.new(food_stacks: 1, food_stack_size: 10)
 
-    assert [{_, _}] = world |> World.food |> Map.keys
-    assert [10] = world |> World.food |> Map.values
+    assert [%Food{quantity: 10}] = world |> World.food
   end
 
   test "registering creates a nest" do
@@ -61,7 +60,7 @@ defmodule WorldTest do
     {:ok, world} = World.move_ant(world, 1, {1, 1})
 
     assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
-    assert %{{1, 1} => 0} = world |> World.food
+    assert [] = world |> World.food
   end
 
   test "moving an ant with food does not pick up food" do
@@ -70,7 +69,7 @@ defmodule WorldTest do
     {:ok, world} = World.move_ant(world, 1, {1, 1})
 
     assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
-    assert %{{1, 1} => 1} = world |> World.food
+    assert [%Food{pos: {1, 1}, quantity: 1}] = world |> World.food
   end
 
   test "moving an ant with food over a nest drops food" do
@@ -91,12 +90,12 @@ defmodule WorldTest do
 
   test "spawning food" do
     food = %World{} |> World.spawn_food({2, 3}) |> World.food
-    assert %{{2, 3} => 1} = food
+    assert [%Food{pos: {2, 3}, quantity: 1}] = food
   end
 
   test "spawning multiple food" do
     food = %World{} |> World.spawn_food({2, 3}, 3) |> World.food
-    assert %{{2, 3} => 3} = food
+    assert [%Food{pos: {2, 3}, quantity: 3}] = food
   end
 
   test "picking up food" do
@@ -105,7 +104,7 @@ defmodule WorldTest do
     |> World.pick_up_food({2, 3})
     |> World.food
 
-    assert %{{2, 3} => 2} = food
+    assert [%Food{pos: {2, 3}, quantity: 2}] = food
   end
 
   test "finding an ant" do
