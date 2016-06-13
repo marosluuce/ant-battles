@@ -9,7 +9,7 @@ defmodule WebsocketTest do
   test "sends the observed world" do
     {:reply, {:text, json}, _, _} = Websocket.websocket_info(:observe, :req, :state)
 
-    assert %{"ants" => [], "food" => []} = Poison.decode!(json)
+    assert %{"ants" => [], "food" => [], "nests" => []} = Poison.decode!(json)
   end
 
   test "observing loops" do

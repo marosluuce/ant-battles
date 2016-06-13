@@ -10,7 +10,8 @@ defimpl Command, for: Observe do
   def success(_, pid, world) do
     observed = %{
       ants: ants(world),
-      food: food(world)
+      food: food(world),
+      nests: nests(world)
     }
 
     send pid, {:ok, observed}
@@ -25,10 +26,17 @@ defimpl Command, for: Observe do
   end
 
   defp food(world) do
-    world.food
+    world
+    |> World.food
     |> Enum.filter(fn {_, quantity} -> quantity > 0 end)
     |> Enum.map(fn f -> Kernel.elem(f, 0) end)
     |> Enum.map(&Tuple.to_list/1)
+  end
+
+  defp nests(world) do
+    world
+    |> World.nests
+    |> Enum.map(&Message.details/1)
   end
 end
 
