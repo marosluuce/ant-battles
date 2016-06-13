@@ -1,5 +1,5 @@
 defmodule Nest do
-  defstruct team: "", id: 0, pos: {0, 0}, food: 500, ants: 0
+  defstruct team: "", id: 0, pos: {0, 0}, food: 5, ants: 0
 
   def spawn_ant(nest) do
     nest
