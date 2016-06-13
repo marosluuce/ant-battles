@@ -123,6 +123,7 @@ defmodule World do
 
   defp ant_delivered_food?(world, ant), do: ant_reached_own_nest?(world, ant) && ant.has_food
 
+  defp ant_found_food?(_, %Ant{has_food: true}), do: false
   defp ant_found_food?(world, ant), do: amount_of_food_at(world, ant.pos) > 0
 
   defp ant_gets_food(world, ant) do

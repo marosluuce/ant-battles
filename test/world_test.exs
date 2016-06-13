@@ -64,6 +64,15 @@ defmodule WorldTest do
     assert %{{1, 1} => 0} = world |> World.food
   end
 
+  test "moving an ant with food does not pick up food" do
+    world = %World{ants: [%Ant{id: 1, pos: {0, 0}, has_food: true}]}
+    world = World.spawn_food(world, {1, 1}, 1)
+    {:ok, world} = World.move_ant(world, 1, {1, 1})
+
+    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
+    assert %{{1, 1} => 1} = world |> World.food
+  end
+
   test "moving an ant with food over a nest drops food" do
     world = %World{
       ants: [%Ant{id: 2, nest_id: 1, pos: {0, 1}, has_food: true}],
