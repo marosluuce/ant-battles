@@ -14,5 +14,5 @@ elm make src/Main.elm --output elm.js
 cd $HERE
 
 # build the docker image
-docker build . -t elm:elm
+docker build . -t ant:ant
 
