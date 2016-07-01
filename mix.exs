@@ -31,6 +31,7 @@ defmodule AntBattles.Mixfile do
   defp deps do
     [{:cowboy, "~> 1.0.0"},
      {:plug, "~> 1.0"},
-     {:poison, "~> 2.0"}]
+     {:poison, "~> 2.0"},
+     {:exrm, "~> 1.0"}]
   end
 end
