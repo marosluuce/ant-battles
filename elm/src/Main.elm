@@ -10,35 +10,55 @@ import Arena
 import World exposing (World)
 import Util exposing (randomColor)
 
-type alias Model = World
+type alias Flags =
+  { location: String
+  }
+
+type alias Model =
+  { world: World
+  , location: String
+  }
 
 type Msg
   = Response String
 
-main : Program Never
+main : Program Flags
 main =
-  Html.program
-    { init = (World.empty, Cmd.none)
+  Html.programWithFlags
+    { init = init
     , view = view
     , update = update
     , subscriptions = subscriptions
     }
+
+init : Flags -> (Model, Cmd Msg)
+init {location} =
+    ({world = World.empty, location = location},  Cmd.none)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
     Response message ->
       let world = parseResponse message
-      in (world, Cmd.none)
+      in ({model | world = world}, Cmd.none)
 
 subscriptions : Model -> Sub Msg
-subscriptions model =
-  Sub.batch [ WebSocket.listen "ws://localhost:4000/ws" Response ]
+subscriptions {location} =
+  let
+      url = websocketUrl location
+  in
+      Sub.batch [ WebSocket.listen url Response ]
+
+
+websocketUrl : String -> String
+websocketUrl hostname =
+  "ws://" ++ hostname ++ ":4000/ws"
+
 
 view : Model -> Html Msg
-view model =
-    let arena = Arena.render (1040, 1040) model
-        nests = nestBox model.nests
+view {world} =
+    let arena = Arena.render (1040, 1040) world
+        nests = nestBox world.nests
         elements = [header, nests, arena]
     in
         div
