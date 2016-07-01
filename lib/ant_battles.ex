@@ -19,10 +19,13 @@ defmodule AntBattles do
   end
 
   def command_line_args do
-    types = [delay: :integer, food_stacks: :integer, food_stack_size: :integer]
+    delay = Application.get_env(:ant_battles, :delay)  |> default(200)
+    food_stacks = Application.get_env(:ant_battles, :food_stacks)  |> default(100)
+    food_stack_size = Application.get_env(:ant_battles, :food_stack_size)  |> default(10)
 
-    System.argv()
-    |> OptionParser.parse(strict: types)
-    |> elem(0)
+    [delay: delay, food_stacks: food_stacks, food_stack_size: food_stack_size]
   end
+
+  def default(value, _) when is_integer(value), do: value
+  def default(_, other), do: other
 end

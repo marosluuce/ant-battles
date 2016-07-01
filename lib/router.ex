@@ -1,6 +1,10 @@
 defmodule Router do
   use Plug.Router
 
+  plug Plug.Static,
+    at: "/elm",
+    from: "/elm"
+
   plug Plug.Logger
   plug :match
   plug :dispatch

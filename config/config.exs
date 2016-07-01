@@ -18,6 +18,10 @@ use Mix.Config
 #
 config :logger, level: :info
 
+config :ant_battles, delay: "${DELAY}",
+                     food_stacks: "${FOOD_STACKS}",
+                     food_stack_size: "${FOOD_STACK_SIZE}"
+
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
 # by uncommenting the line below and defining dev.exs, test.exs and such.
