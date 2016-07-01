@@ -19,13 +19,18 @@ defmodule AntBattles do
   end
 
   def command_line_args do
-    delay = Application.get_env(:ant_battles, :delay)  |> default(200)
-    food_stacks = Application.get_env(:ant_battles, :food_stacks)  |> default(100)
-    food_stack_size = Application.get_env(:ant_battles, :food_stack_size)  |> default(10)
+    delay = System.get_env("DELAY")  |> default(200)
+    food_stacks = System.get_env("FOOD_STACKS") |> default(100)
+    food_stack_size = System.get_env("FOOD_STACK_SIZE")  |> default(10)
 
     [delay: delay, food_stacks: food_stacks, food_stack_size: food_stack_size]
   end
 
-  def default(value, _) when is_integer(value), do: value
-  def default(_, other), do: other
+  def default(nil, other), do: other
+  def default(value, other)  do
+    case Integer.parse(value) do
+      {x, ""} -> x
+      _ -> other
+    end
+  end
 end
