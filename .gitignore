@@ -3,3 +3,6 @@
 /deps
 erl_crash.dump
 *.ez
+/rel/**
+!/rel/relx.config
+/elm/elm.js

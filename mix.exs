@@ -15,7 +15,7 @@ defmodule AntBattles.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger, :cowboy, :plug],
+    [applications: [:logger, :cowboy, :plug, :poison],
      mod: {AntBattles, []}]
   end
 
@@ -31,6 +31,7 @@ defmodule AntBattles.Mixfile do
   defp deps do
     [{:cowboy, "~> 1.0.0"},
      {:plug, "~> 1.0"},
-     {:poison, "~> 2.0"}]
+     {:poison, "~> 2.0"},
+     {:exrm, "~> 1.0"}]
   end
 end

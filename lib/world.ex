@@ -198,7 +198,7 @@ defmodule World do
   def food(%World{food: food}) do
     Enum.filter_map(
       food,
-      fn {location, quantity} -> quantity > 0 end,
+      fn {_location, quantity} -> quantity > 0 end,
       fn {location, quantity} -> %Food{pos: location, quantity: quantity} end
     )
   end
