@@ -1,6 +1,15 @@
 defmodule Router do
   use Plug.Router
 
+  @commands """
+  Commands:
+    /join/:name                 Join the arena. Your (team) name must be unique.
+    /:nest-id/spawn             Spawns an ant. Requires 1 food.
+    /:ant-id/look               Look around.
+    /:ant-id/move/:direction    Move either n, ne, e, se, s, sw, w, nw
+    /id:/stat                   Immediately return the status of the object with the :id
+  """
+
   plug Plug.Static,
     at: "/elm",
     from: "/elm"
@@ -10,7 +19,7 @@ defmodule Router do
   plug :dispatch
 
   get "/" do
-    send_resp(conn, 200, "Welcome to Ant Battles!")
+    send_resp(conn, 200, "Welcome to Ant Battles! \n\n#{@commands}")
   end
 
   get "/join/:team" do

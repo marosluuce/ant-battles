@@ -69,7 +69,7 @@ header : Html Msg
 header =
   h1
   [ style [ ("textAlign", "center") ] ]
-  [ text "Welcome to the 🐜 Battle Zone™" ]
+  [ text "Welcome to the 🐜💨 Battle Zone™" ]
 
 nestRow nest =
   tr []
