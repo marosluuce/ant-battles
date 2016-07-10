@@ -5,6 +5,7 @@ defmodule Router do
   Commands:
     /join/:name                 Join the arena. Your (team) name must be unique.
     /:nest-id/spawn             Spawns an ant. Requires 1 food.
+    /:nest-id/leave             Leaves the game
     /:ant-id/look               Look around.
     /:ant-id/move/:direction    Move either n, ne, e, se, s, sw, w, nw
     /id:/stat                   Immediately return the status of the object with the :id
