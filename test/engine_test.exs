@@ -10,6 +10,12 @@ defmodule EngineTest do
     assert {:ok, %{team: "name"}} = Engine.join("name")
   end
 
+  test "a user leaves" do
+    {:ok, %{id: id}} = Engine.join("name")
+
+    assert {:ok, %{removed: id}} == Engine.leave(id)
+  end
+
   test "a user spawns an ant" do
     {:ok, %{id: nest_id}} = Engine.join("name")
     assert {:ok, %{nest: ^nest_id}} = Engine.spawn_ant(nest_id)

@@ -34,7 +34,16 @@ defmodule World do
     end
   end
 
+  def unregister(world, nest_id) do
+    case nest(world, nest_id: nest_id) do
+      %Nest{} = nest -> {:ok, remove_nest(world, nest)}
+        _ -> {:error, :team_does_not_exist}
+    end
+  end
+
   defp add_nest(world = %World{nests: nests}, nest), do: %{world | nests: [nest | nests]}
+
+  defp remove_nest(world = %World{nests: nests}, nest), do: %{world | nests: List.delete(nests, nest)}
 
   defp new_nest(team), do: %Nest{id: id(), team: team}
 
@@ -187,6 +196,11 @@ defmodule World do
     |> Enum.filter(&(&1.nest_id == nest_id))
   end
 
+  def nest(world, [nest_id: nest_id]) do
+    world
+    |> World.nests
+    |> Enum.find({:error, :not_found}, &(&1.id == nest_id))
+  end
   def nest(world, team) do
     world
     |> World.nests

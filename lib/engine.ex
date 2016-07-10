@@ -12,6 +12,8 @@ defmodule Engine do
 
   def join(team), do: execute(%Join{team: team})
 
+  def leave(nest_id), do: execute(%Leave{nest_id: nest_id})
+
   def spawn_ant(nest_id), do: execute(%SpawnAnt{nest_id: nest_id})
 
   def move_ant(ant_id, direction) do

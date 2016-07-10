@@ -21,6 +21,18 @@ defmodule WorldTest do
     assert {:error, :name_taken} = World.register(world, "name")
   end
 
+  test "unregistering removes a nest" do
+    {:ok, world} = World.register(%World{}, "name")
+    [%Nest{id: id} ] = World.nests(world)
+    {:ok, new_world} = World.unregister(world, id)
+
+    assert [] = World.nests(new_world)
+  end
+
+  test "does not unregsiter unknown nest" do
+    assert {:error, :team_does_not_exist} = World.unregister(%World{}, 42)
+  end
+
   test "spawning an ant" do
     {:ok, world} = %World{nests: [%Nest{id: 1}]} |> World.spawn_ant(1)
 

@@ -65,6 +65,15 @@ defmodule Router do
     |> respond(conn)
   end
 
+  get "/:nest_id/leave" do
+    {converted_id, _} = Integer.parse(nest_id)
+
+    converted_id
+    |> Engine.leave
+    |> build_response
+    |> respond(conn)
+  end
+
   match _ do
     send_resp(conn, 404, "Woops!")
   end
