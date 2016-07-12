@@ -104,4 +104,13 @@ defmodule RouterTest do
     {:ok, response} = Poison.decode(conn.resp_body)
     assert %{"status" => "ok", "message" => %{}} = response
   end
+
+  test "errors when team is unknown" do
+    conn = conn(:get, "/-1/leave")
+    |> Router.call(@opts)
+
+    assert conn.status == 200
+    {:ok, response} = Poison.decode(conn.resp_body)
+    assert %{"status" => "error", "message" => "no_such_team"} = response
+  end
 end

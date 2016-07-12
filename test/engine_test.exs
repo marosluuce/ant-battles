@@ -16,6 +16,10 @@ defmodule EngineTest do
     assert {:ok, %{removed: id}} == Engine.leave(id)
   end
 
+  test "unknown team tries to leave" do
+    assert {:error, :no_such_team} == Engine.leave(-1)
+  end
+
   test "a user spawns an ant" do
     {:ok, %{id: nest_id}} = Engine.join("name")
     assert {:ok, %{nest: ^nest_id}} = Engine.spawn_ant(nest_id)

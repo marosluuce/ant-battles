@@ -12,5 +12,5 @@ defimpl Command, for: Leave do
   def success(%Leave{nest_id: nest_id}, pid, world) do
     send pid, {:ok, %{:removed => nest_id}}
   end
-  def failure(_, pid, _), do: {:error, :item_does_not_exist}
+  def failure(_, pid, _), do: send pid, {:error, :no_such_team}
 end
