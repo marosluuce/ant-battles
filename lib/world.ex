@@ -43,7 +43,10 @@ defmodule World do
 
   defp add_nest(world = %World{nests: nests}, nest), do: %{world | nests: [nest | nests]}
 
-  defp remove_nest(world = %World{nests: nests}, nest), do: %{world | nests: List.delete(nests, nest)}
+  defp remove_nest(world = %World{nests: nests, ants: ants}, nest) do
+     %{world | nests: List.delete(nests, nest),
+               ants: Enum.reject(ants, &(&1.nest_id == nest.id)) }
+  end
 
   defp new_nest(team), do: %Nest{id: id(), team: team}
 

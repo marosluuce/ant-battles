@@ -33,6 +33,13 @@ defmodule WorldTest do
     assert {:error, :team_does_not_exist} = World.unregister(%World{}, 42)
   end
 
+  test "unregistering removes ants belongong to that nest" do
+    {:ok, world} = %World{nests: [%Nest{id: 1}]} |> World.spawn_ant(1)
+    {:ok, world} = World.unregister(world, 1)
+
+    assert [] =  world |> World.ants
+  end
+
   test "spawning an ant" do
     {:ok, world} = %World{nests: [%Nest{id: 1}]} |> World.spawn_ant(1)
 
