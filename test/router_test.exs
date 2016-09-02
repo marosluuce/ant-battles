@@ -14,7 +14,7 @@ defmodule RouterTest do
     |> Router.call(@opts)
 
     assert conn.status == 200
-    assert conn.resp_body == "Welcome to Ant Battles!"
+    assert String.contains?(conn.resp_body, "Welcome to Ant Battles!")
   end
 
   test "joining" do

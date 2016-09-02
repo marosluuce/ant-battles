@@ -6,14 +6,10 @@ defmodule ObserveTest do
   end
 
   test "success sends a message" do
-    Command.success(%Observe{}, self(), %World{})
-
-    assert_received {:ok, %{ants: [], food: [], nests: []}}
+    assert {:ok, %{ants: [], food: [], nests: []}} = Command.success(%Observe{}, %World{})
   end
 
   test "failure sends a message" do
-    Command.failure(%Observe{}, self(), %World{})
-
-    assert_received {:error, :failed_to_observe}
+    assert {:error, :failed_to_observe} = Command.failure(%Observe{}, %World{})
   end
 end

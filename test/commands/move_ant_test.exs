@@ -15,16 +15,12 @@ defmodule MoveAntTest do
     command = %MoveAnt{ant_id: 1}
     ant = %Ant{id: 1, pos: {2, 4}}
     world = %World{ants: [ant]}
-
-    Command.success(command, self(), world)
-
     message = Message.with_surroundings(ant, world)
-    assert_received {:ok, ^message}
+
+    assert {:ok, ^message} = Command.success(command, world)
   end
 
   test "it sends a failure message" do
-    Command.failure(%MoveAnt{ant_id: 1}, self(), %World{})
-
-    assert_received {:error, :invalid_id}
+    assert {:error, :invalid_id} = Command.failure(%MoveAnt{ant_id: 1}, %World{})
   end
 end

@@ -6,7 +6,7 @@ defmodule AntBattles do
 
     children = [
       worker(Engine, [command_line_args()]),
-      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch(), acceptors: 1000])
+      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch()])
     ]
 
     opts = [strategy: :one_for_one]
@@ -19,11 +19,10 @@ defmodule AntBattles do
   end
 
   def command_line_args do
-    delay = System.get_env("DELAY")  |> default(200)
     food_stacks = System.get_env("FOOD_STACKS") |> default(100)
     food_stack_size = System.get_env("FOOD_STACK_SIZE")  |> default(10)
 
-    [delay: delay, food_stacks: food_stacks, food_stack_size: food_stack_size]
+    [food_stacks: food_stacks, food_stack_size: food_stack_size]
   end
 
   def default(nil, other), do: other

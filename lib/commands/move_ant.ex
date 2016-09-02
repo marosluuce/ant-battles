@@ -3,19 +3,17 @@ defmodule MoveAnt do
 end
 
 defimpl Command, for: MoveAnt do
-  def id(%MoveAnt{ant_id: ant_id}), do: ant_id
-
   def execute(%MoveAnt{ant_id: ant_id, velocity: velocity}, world) do
     World.move_ant(world, ant_id, velocity)
   end
 
-  def success(%MoveAnt{ant_id: ant_id}, pid, world) do
+  def success(%MoveAnt{ant_id: ant_id}, world) do
     message = world
     |> World.ant(ant_id)
     |> Message.with_surroundings(world)
 
-    send pid, {:ok, message}
+    {:ok, message}
   end
 
-  def failure(_, pid, _), do: send pid, {:error, :invalid_id}
+  def failure(_, _), do: {:error, :invalid_id}
 end

@@ -15,16 +15,12 @@ defmodule SpawnAntTest do
     command = %SpawnAnt{nest_id: 2}
     ant = %Ant{id: 1, nest_id: 2, pos: {0, 0}, team: "me"}
     world = %World{ants: [ant]}
-
-    Command.success(command, self(), world)
-
     message = Message.with_surroundings(ant, world)
-    assert_received {:ok, ^message}
+
+    assert {:ok, ^message} = Command.success(command, world)
   end
 
   test "it sends a failure message" do
-    Command.failure(%SpawnAnt{}, self(), %World{})
-
-    assert_received {:error, :insufficient_food}
+    assert {:error, :insufficient_food} = Command.failure(%SpawnAnt{}, %World{})
   end
 end

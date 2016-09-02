@@ -1,23 +1,21 @@
 defmodule Observe do
-  defstruct pid: -1
+  defstruct id: -1
 end
 
 defimpl Command, for: Observe do
-  def id(%Observe{pid: pid}), do: pid
-
   def execute(_, world), do: {:ok, world}
 
-  def success(_, pid, world) do
+  def success(_, world) do
     observed = %{
       ants: ants(world),
       food: food(world),
       nests: nests(world)
     }
 
-    send pid, {:ok, observed}
+    {:ok, observed}
   end
 
-  def failure(_, pid, _), do: send pid, {:error, :failed_to_observe}
+  def failure(_, _), do: {:error, :failed_to_observe}
 
   defp ants(world) do
     world
@@ -38,4 +36,3 @@ defimpl Command, for: Observe do
     |> Enum.map(&Message.details/1)
   end
 end
-

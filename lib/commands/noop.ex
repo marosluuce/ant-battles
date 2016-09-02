@@ -3,11 +3,9 @@ defmodule Noop do
 end
 
 defimpl Command, for: Noop do
-  def id(%Noop{id: id}), do: id
-
   def execute(_, world), do: {:ok, world}
 
-  def success(_, pid, _), do: send pid, {:ok, :ok}
+  def success(_, _), do: {:ok, :ok}
 
-  def failure(_, pid, _), do: send pid, {:error, :error}
+  def failure(_, _), do: {:error, :error}
 end

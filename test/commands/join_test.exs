@@ -9,17 +9,13 @@ defmodule JoinTest do
 
   test "it sends a success message" do
     {:ok, world} = World.register(%World{}, "name")
-
-    Command.success(%Join{team: "name"}, self(), world)
-
     [nest] = world |> World.nests
     message = Message.details(nest)
-    assert_received {:ok, ^message}
+
+    assert {:ok, ^message} = Command.success(%Join{team: "name"}, world)
   end
 
   test "it sends a failure message" do
-    Command.failure(%Join{}, self(), %World{})
-
-    assert_received {:error, :name_taken}
+    assert {:error, :name_taken} = Command.failure(%Join{}, %World{})
   end
 end

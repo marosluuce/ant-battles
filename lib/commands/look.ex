@@ -3,8 +3,6 @@ defmodule Look do
 end
 
 defimpl Command, for: Look do
-  def id(%Look{ant_id: ant_id}), do: ant_id
-
   def execute(%Look{ant_id: ant_id}, world) do
     not_found = world
     |> World.ant(ant_id)
@@ -17,15 +15,15 @@ defimpl Command, for: Look do
     end
   end
 
-  def success(%Look{ant_id: ant_id}, pid, world) do
+  def success(%Look{ant_id: ant_id}, world) do
     message = world
     |> World.ant(ant_id)
     |> Message.with_surroundings(world)
 
-    send pid, {:ok, message}
+    {:ok, message}
   end
 
-  def failure(_, pid, _) do
-    send pid, {:error, :invalid_id}
+  def failure(_, _) do
+    {:error, :invalid_id}
   end
 end

@@ -8,14 +8,10 @@ defmodule AddFoodTest do
   end
 
   test "success sends a message" do
-    Command.success(%AddFood{}, self(), %World{})
-
-    assert_received {:ok, :added_food}
+    assert {:ok, :added_food} = Command.success(%AddFood{}, %World{})
   end
 
   test "failure sends a message" do
-    Command.failure(%AddFood{}, self(), %World{})
-
-    assert_received {:error, :failed_to_add_food}
+    assert {:error, :failed_to_add_food} = Command.failure(%AddFood{}, %World{})
   end
 end

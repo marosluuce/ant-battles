@@ -1,13 +1,12 @@
 defmodule Engine do
-  defstruct delay: 200, instructions: [], world: %World{}
+  defstruct world: %World{}
 
   def start_link(args) do
-    delay = Keyword.get(args, :delay, 200)
-
-    result = GenServer.start_link(EngineServer, %Engine{delay: delay, world: World.new(args)}, name: EngineServer)
-    start_tick()
-
-    result
+    GenServer.start_link(
+      EngineServer,
+      %Engine{world: World.new(args)},
+      name: EngineServer
+    )
   end
 
   def join(team), do: execute(%Join{team: team})
@@ -20,7 +19,7 @@ defmodule Engine do
 
   def look(ant_id), do: execute(%Look{ant_id: ant_id})
 
-  def observe, do: execute(%Observe{pid: self()})
+  def observe, do: execute(%Observe{})
 
   def add_food(location, quantity), do: execute(%AddFood{location: location, quantity: quantity})
 
@@ -37,21 +36,5 @@ defmodule Engine do
 
   defp get_world, do: GenServer.call(EngineServer, :get_world)
 
-  defp execute(command) do
-    command
-    |> enqueue
-    |> respond
-  end
-
-  defp enqueue(command), do: GenServer.call(EngineServer, {:enqueue, command})
-
-  defp respond({:ok, _}) do
-    receive do
-      {:ok, message} -> {:ok, message}
-      {:error, message} -> {:error, message}
-    end
-  end
-  defp respond(error), do: error
-
-  defp start_tick, do: send EngineServer, :tick
+  defp execute(command), do: GenServer.call(EngineServer, {:run, command})
 end

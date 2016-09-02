@@ -2,13 +2,11 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (..)
 import Html.App as Html
 import WebSocket
 
 import Arena
-import World exposing (World)
-import Util exposing (randomColor)
+import World exposing (World, Nest)
 
 type alias Flags =
   { location: String
@@ -71,6 +69,7 @@ header =
   [ style [ ("textAlign", "center") ] ]
   [ text "Welcome to the 🐜💨 Battle Zone™" ]
 
+nestRow : Nest -> Html a
 nestRow nest =
   tr []
     [ td [] [ Arena.renderColorSquare nest ]

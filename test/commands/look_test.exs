@@ -15,16 +15,12 @@ defmodule LookTest do
   test "sending a success message" do
     ant = %Ant{id: 1}
     world = %World{ants: [ant]}
-
-    Command.success(%Look{ant_id: 1}, self(), world)
-
     message = Message.with_surroundings(ant, world)
-    assert_received {:ok, ^message}
+
+    assert {:ok, ^message} = Command.success(%Look{ant_id: 1}, world)
   end
 
   test "sending a failure message" do
-    Command.failure(%Look{}, self(), %World{})
-
-    assert_received {:error, :invalid_id}
+    assert {:error, :invalid_id} = Command.failure(%Look{}, %World{})
   end
 end
