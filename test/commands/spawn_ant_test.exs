@@ -7,7 +7,7 @@ defmodule SpawnAntTest do
 
     {:ok, updated_world} = Command.execute(command, world)
 
-    [ant] = updated_world |> World.ants
+    [ant] = updated_world.ants
     assert ant.nest_id() == 1
   end
 

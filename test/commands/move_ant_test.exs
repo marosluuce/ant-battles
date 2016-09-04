@@ -7,7 +7,7 @@ defmodule MoveAntTest do
 
     {:ok, updated_world} = Command.execute(command, world)
 
-    [ant] = updated_world |> World.ants
+    [ant] = updated_world.ants
     assert ant.pos == {2, 4}
   end
 

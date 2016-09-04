@@ -2,7 +2,7 @@ defmodule EngineTest do
   use ExUnit.Case
 
   setup do
-    Engine.start_link(delay: 1)
+    Engine.start_link([food_stacks: 0, food_stack_size: 0])
     :ok
   end
 

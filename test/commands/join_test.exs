@@ -4,15 +4,14 @@ defmodule JoinTest do
   test "it registers a user" do
     {:ok, world} = Command.execute(%Join{team: "name"}, %World{})
 
-    assert world |> World.nests |> Enum.count == 1
+    assert Enum.count(world.nests) == 1
   end
 
   test "it sends a success message" do
-    {:ok, world} = World.register(%World{}, "name")
-    [nest] = world |> World.nests
-    message = Message.details(nest)
+    {:ok, world} = Command.execute(%Join{team: "name"}, %World{})
+    message = Message.details(Enum.at(world.nests, 0))
 
-    assert {:ok, ^message} = Command.success(%Join{team: "name"}, world)
+    assert {:ok, message} == Command.success(%Join{team: "name"}, world)
   end
 
   test "it sends a failure message" do

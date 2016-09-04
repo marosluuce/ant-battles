@@ -18,8 +18,7 @@ defimpl Command, for: Observe do
   def failure(_, _), do: {:error, :failed_to_observe}
 
   defp ants(world) do
-    world
-    |> World.ants
+    world.ants
     |> Enum.map(&Message.details/1)
   end
 
@@ -31,8 +30,7 @@ defimpl Command, for: Observe do
   end
 
   defp nests(world) do
-    world
-    |> World.nests
+    world.nests
     |> Enum.map(&Message.details/1)
   end
 end

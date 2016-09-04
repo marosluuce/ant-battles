@@ -24,9 +24,7 @@ defmodule Engine do
   def add_food(location, quantity), do: execute(%AddFood{location: location, quantity: quantity})
 
   def info(id) do
-    world = get_world()
-
-    world
+    get_world()
     |> World.find(id)
     |> format_info
   end

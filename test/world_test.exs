@@ -2,18 +2,18 @@ defmodule WorldTest do
   use ExUnit.Case, async: true
 
   test "can create a new world" do
-    assert %World{} = World.new([])
+    assert %World{} = World.new([food_stacks: 0, food_stack_size: 0])
   end
 
   test "a new world has food" do
     world = World.new(food_stacks: 1, food_stack_size: 10)
 
-    assert [%Food{quantity: 10}] = world |> World.food
+    assert [%Food{quantity: 10}] = World.food(world)
   end
 
   test "registering creates a nest" do
     {:ok, world} = World.register(%World{}, "name")
-    assert [%Nest{team: "name"}] = World.nests(world)
+    assert [%Nest{team: "name"}] = world.nests
   end
 
   test "registering does not create duplicate " do
@@ -24,14 +24,14 @@ defmodule WorldTest do
   test "spawning an ant" do
     {:ok, world} = %World{nests: [%Nest{id: 1}]} |> World.spawn_ant(1)
 
-    assert [%Ant{nest_id: 1}] = world |> World.ants
+    assert [%Ant{nest_id: 1}] = world.ants
   end
 
   test "spawned ants have unique ids" do
     {:ok, world} = World.spawn_ant(%World{nests: [%Nest{id: 1}]}, 1)
     {:ok, world} = World.spawn_ant(world, 1)
 
-    [ant_1, ant_2] = world |> World.ants
+    [ant_1, ant_2] = world.ants
 
     refute ant_1.id == ant_2.id
   end
@@ -51,7 +51,7 @@ defmodule WorldTest do
     {:ok, world} = %World{ants: [%Ant{id: 1}]}
     |> World.move_ant(1, {0, 1})
 
-    assert [%Ant{pos: {0, 1}}] = world |> World.ants
+    assert [%Ant{pos: {0, 1}}] = world.ants
   end
 
   test "moving an ant over food picks up food" do
@@ -59,7 +59,7 @@ defmodule WorldTest do
     world = World.spawn_food(world, {1, 1}, 1)
     {:ok, world} = World.move_ant(world, 1, {1, 1})
 
-    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
+    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world.ants
     assert [] = world |> World.food
   end
 
@@ -68,7 +68,7 @@ defmodule WorldTest do
     world = World.spawn_food(world, {1, 1}, 1)
     {:ok, world} = World.move_ant(world, 1, {1, 1})
 
-    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world |> World.ants
+    assert [%Ant{id: 1, pos: {1, 1}, has_food: true}] = world.ants
     assert [%Food{pos: {1, 1}, quantity: 1}] = world |> World.food
   end
 
@@ -80,8 +80,8 @@ defmodule WorldTest do
 
     {:ok, world} = World.move_ant(world, 2, {0, -1})
 
-    assert [%Ant{has_food: false}] = world |> World.ants
-    assert [%Nest{food: 1}] = world |> World.nests
+    assert [%Ant{has_food: false}] = world.ants
+    assert [%Nest{food: 1}] = world.nests
   end
 
   test "moving errors when ant does not exist" do

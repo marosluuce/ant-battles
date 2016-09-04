@@ -1,23 +1,25 @@
 defmodule LookTest do
   use ExUnit.Case, async: true
 
-  test "looking succeeds when the ant exists" do
+  setup do
     ant = %Ant{id: 1}
     world = %World{ants: [ant]}
 
-    assert Command.execute(%Look{ant_id: 1}, world) == {:ok, world}
+    [ant: ant, world: world]
+  end
+
+  test "looking succeeds when the ant exists", context do
+    assert {:ok, context[:world]} == Command.execute(%Look{ant_id: 1}, context[:world])
   end
 
   test "looking errors when the ant does not exist" do
-    assert Command.execute(%Look{ant_id: 1}, %World{}) == {:error, :invalid_id}
+    assert {:error, :invalid_id} == Command.execute(%Look{ant_id: 1}, %World{})
   end
 
-  test "sending a success message" do
-    ant = %Ant{id: 1}
-    world = %World{ants: [ant]}
-    message = Message.with_surroundings(ant, world)
+  test "sending a success message", context do
+    message = Message.with_surroundings(context[:ant], context[:world])
 
-    assert {:ok, ^message} = Command.success(%Look{ant_id: 1}, world)
+    assert {:ok, message} == Command.success(%Look{ant_id: 1}, context[:world])
   end
 
   test "sending a failure message" do
