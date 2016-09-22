@@ -1,8 +1,11 @@
 defmodule WebsocketTest do
   use ExUnit.Case
 
+  alias AntBattles.Engine
+  alias AntBattles.Websocket
+
   setup do
-    Engine.start_link([food_stacks: 0, food_stack_size: 0])
+    Engine.reset()
     :ok
   end
 

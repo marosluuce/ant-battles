@@ -1,6 +1,12 @@
 defmodule MoveAntTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+  alias AntBattles.Message
+  alias AntBattles.World
+  alias AntBattles.Commands.Command
+  alias AntBattles.Commands.MoveAnt
+
   test "it moves an ant" do
     command = %MoveAnt{ant_id: 1, velocity: {0, 1}}
     world = %World{ants: [%Ant{id: 1, pos: {2, 3}}]}

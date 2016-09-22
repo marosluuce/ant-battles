@@ -1,6 +1,12 @@
 defmodule JoinTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.World
+  alias AntBattles.Message
+  alias AntBattles.Commands.Command
+  alias AntBattles.Commands.Join
+
+
   test "it registers a user" do
     {:ok, world} = Command.execute(%Join{team: "name"}, %World{})
 

@@ -1,6 +1,12 @@
 defmodule LookTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+  alias AntBattles.Message
+  alias AntBattles.World
+  alias AntBattles.Commands.Command
+  alias AntBattles.Commands.Look
+
   setup do
     ant = %Ant{id: 1}
     world = %World{ants: [ant]}

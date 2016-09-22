@@ -1,6 +1,10 @@
 defmodule ObserveTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.World
+  alias AntBattles.Commands.Command
+  alias AntBattles.Commands.Observe
+
   test "execute always succeeds" do
     assert {:ok, :world} = Command.execute(%Observe{}, :world)
   end

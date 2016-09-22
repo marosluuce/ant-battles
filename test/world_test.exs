@@ -1,6 +1,11 @@
 defmodule WorldTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+  alias AntBattles.Food
+  alias AntBattles.Nest
+  alias AntBattles.World
+
   test "can create a new world" do
     assert %World{} = World.new([food_stacks: 0, food_stack_size: 0])
   end

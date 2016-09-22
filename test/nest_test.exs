@@ -1,6 +1,8 @@
 defmodule NestTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Nest
+
   test "spawning an ant decreases food" do
     assert %Nest{food: 4} = Nest.spawn_ant(%Nest{food: 5})
   end
