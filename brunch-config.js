@@ -1,7 +1,9 @@
 exports.config = {
   files: {
     javascripts: {
-      joinTo: "js/app.js"
+      joinTo: {
+        "js/app.js": 'web/static/**/*.js'
+      }
     },
     stylesheets: {
       joinTo: "css/app.css",
@@ -15,8 +17,7 @@ exports.config = {
   },
 
   conventions: {
-    assets: /^(web\/static\/assets)/,
-    ignored: 'web/elm/**/*'
+    assets: /^(web\/static\/assets)/
   },
 
   paths: {
@@ -34,6 +35,7 @@ exports.config = {
       ignore: [/web\/static\/vendor/]
     },
     elmBrunch: {
+      executablePath: '../../node_modules/elm/binwrappers',
       elmFolder: 'web/elm',
       mainModules: ['src/Main.elm'],
       outputFolder: '../../priv/static/js',
