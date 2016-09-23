@@ -1,6 +1,12 @@
 defmodule MessageTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+  alias AntBattles.Food
+  alias AntBattles.Message
+  alias AntBattles.Nest
+  alias AntBattles.World
+
   test "nest details" do
     nest = %Nest{id: 1, team: "me", pos: {0, 0}, food: 5}
 

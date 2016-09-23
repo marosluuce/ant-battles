@@ -1,0 +1,11 @@
+<pre>
+Welcome to Ant Battles!
+
+
+Commands:
+  /api/join/:name               Join the arena. Your name must be unique.
+  /api/:nest-id/spawn           Spawns an ant. Requires 1 food.
+  /api/:ant-id/look             Look around.
+  /api/:ant-id/move/:direction  Move either n, ne, e, se, s, sw, w, nw.
+  /api/id:/stat                 Return the status of the object with the :id.
+</pre>

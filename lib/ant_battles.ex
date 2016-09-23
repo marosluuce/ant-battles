@@ -1,35 +1,20 @@
 defmodule AntBattles do
   use Application
 
-  def start(_, _) do
-    import Supervisor.Spec, warn: false
+  def start(_type, _args) do
+    import Supervisor.Spec
 
     children = [
-      worker(Engine, [command_line_args()]),
-      Plug.Adapters.Cowboy.child_spec(:http, Router, [], [port: 4000, dispatch: dispatch()])
+      supervisor(AntBattles.Endpoint, []),
+      worker(AntBattles.Engine, [[food_stacks: 50, food_stack_size: 100]])
     ]
 
-    opts = [strategy: :one_for_one]
-
+    opts = [strategy: :one_for_one, name: AntBattles.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  def dispatch do
-    [{:_, [{"/ws", Websocket, []}, {:_, Plug.Adapters.Cowboy.Handler, {Router, []}}]}]
-  end
-
-  def command_line_args do
-    food_stacks = System.get_env("FOOD_STACKS") |> default(100)
-    food_stack_size = System.get_env("FOOD_STACK_SIZE")  |> default(10)
-
-    [food_stacks: food_stacks, food_stack_size: food_stack_size]
-  end
-
-  def default(nil, other), do: other
-  def default(value, other)  do
-    case Integer.parse(value) do
-      {x, ""} -> x
-      _ -> other
-    end
+  def config_change(changed, _new, removed) do
+    AntBattles.Endpoint.config_change(changed, removed)
+    :ok
   end
 end

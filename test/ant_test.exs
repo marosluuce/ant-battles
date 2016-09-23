@@ -1,6 +1,8 @@
 defmodule AntTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+
   test "can move an ant" do
     ant = %Ant{pos: {0, 0}} |> Ant.move({1, 0})
     assert ant.pos == {1, 0}

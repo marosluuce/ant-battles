@@ -6,3 +6,4 @@ erl_crash.dump
 /rel/**
 !/rel/relx.config
 /elm/elm.js
+node_modules

@@ -1,6 +1,13 @@
 defmodule SpawnAntTest do
   use ExUnit.Case, async: true
 
+  alias AntBattles.Ant
+  alias AntBattles.Message
+  alias AntBattles.Nest
+  alias AntBattles.World
+  alias AntBattles.Commands.Command
+  alias AntBattles.Commands.SpawnAnt
+
   test "it spawns an ant" do
     command = %SpawnAnt{nest_id: 1}
     world = %World{nests: [%Nest{id: 1, food: 1}]}
