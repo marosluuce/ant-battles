@@ -1,9 +1,7 @@
 exports.config = {
   files: {
     javascripts: {
-      joinTo: {
-        "js/app.js": 'web/static/**/*.js'
-      }
+      joinTo: "js/app.js"
     },
     stylesheets: {
       joinTo: "css/app.css",
@@ -17,7 +15,8 @@ exports.config = {
   },
 
   conventions: {
-    assets: /^(web\/static\/assets)/
+    assets: /^(web\/static\/assets)/,
+    ignored: [/^web\/elm\/elm-stuff/]
   },
 
   paths: {
