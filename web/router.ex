@@ -17,6 +17,7 @@ defmodule AntBattles.Router do
     pipe_through :browser
 
     get "/", AntController, :index
+    get "/admin", AntController, :admin
   end
 
   scope "/api", AntBattles do

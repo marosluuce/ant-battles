@@ -1,0 +1,4 @@
+<script src="<%= static_path(@conn, "/js/elm.js") %>" charset="utf-8"></script>
+<script type="text/javascript">
+ Elm.Main.fullscreen({location: location.hostname});
+</script>
