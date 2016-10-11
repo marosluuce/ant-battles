@@ -1,11 +1,8 @@
 defmodule AntBattles.Location do
   def random(radius) do
-    x = :rand.uniform(radius) - radius / 2
-    y = :rand.uniform(radius) - radius / 2
+    x = trunc(:rand.uniform(radius) - radius / 2)
+    y = trunc(:rand.uniform(radius) - radius / 2)
 
-    case {x, y} do
-      {0, 0} -> random(radius)
-      coordinate -> coordinate
-    end
+    {x, y}
   end
 end

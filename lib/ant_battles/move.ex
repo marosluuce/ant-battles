@@ -13,14 +13,28 @@ defmodule AntBattles.Move do
   def from_dir(dir), do: Map.get(@directions, dir, {0, 0})
 
   def to_dir(point) do
-    if valid?(point) do
+    if valid_point?(point) do
       {:ok, find_dir_for(point)}
     else
       {:error, :invalid_direction}
     end
   end
 
-  defp valid?(point) do
+  def convert_dir(string_dir) do
+    if Enum.member?(string_directions(), string_dir) do
+      String.to_atom(string_dir)
+    else
+      {:error, :unknown_direction}
+    end
+  end
+
+  def string_directions do
+    @directions
+    |> Map.keys
+    |> Enum.map(&to_string/1)
+  end
+
+  defp valid_point?(point) do
     @directions
     |> Map.values
     |> Enum.member?(point)

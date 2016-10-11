@@ -1,5 +1,6 @@
 module World exposing (World, Ant, Nest, Point, parse, empty)
 
+import Json.Encode as JE
 import Json.Decode exposing (..)
 
 type alias Point = (Float, Float)
@@ -32,9 +33,9 @@ empty =
     , nests = []
     }
 
-parse : String -> Result String World
+parse : JE.Value -> Result String World
 parse string =
-    decodeString worldDecoder string
+    decodeValue worldDecoder string
 
 worldDecoder : Decoder World
 worldDecoder =

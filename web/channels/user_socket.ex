@@ -2,7 +2,7 @@ defmodule AntBattles.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", AntBattles.RoomChannel
+  channel "room:*", AntBattles.RoomChannel
 
   ## Transports
   transport :websocket, Phoenix.Transports.WebSocket

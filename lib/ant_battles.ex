@@ -6,7 +6,8 @@ defmodule AntBattles do
 
     children = [
       supervisor(AntBattles.Endpoint, []),
-      worker(AntBattles.Engine, [[food_stacks: 50, food_stack_size: 100]])
+      worker(AntBattles.Engine, [[food_stacks: 50, food_stack_size: 100]]),
+      worker(AntBattles.Broadcaster, [200])
     ]
 
     opts = [strategy: :one_for_one, name: AntBattles.Supervisor]

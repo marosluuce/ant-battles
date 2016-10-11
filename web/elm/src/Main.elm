@@ -3,7 +3,10 @@ module Main exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.App as Html
-import WebSocket
+import Phoenix.Socket as Socket
+import Phoenix.Channel
+import Json.Encode as JE
+import Task
 
 import Arena
 import World exposing (World, Nest)
@@ -13,12 +16,21 @@ type alias Flags =
   }
 
 type alias Model =
-  { world: World
-  , location: String
+  { world : World
+  , socket : Socket.Socket Msg
   }
 
+always : a -> b -> a
+always a _ = a
+
+joinChannel : Cmd Msg
+joinChannel =
+    Task.perform (always JoinChannel) (always JoinChannel) (Task.succeed ())
+
 type Msg
-  = Response String
+  = SentWorld JE.Value
+  | PhoenixMsg (Socket.Msg Msg)
+  | JoinChannel
 
 main : Program Flags
 main =
@@ -29,29 +41,50 @@ main =
     , subscriptions = subscriptions
     }
 
+room : String
+room = "room:admin"
+
+initSocket : String -> Socket.Socket Msg
+initSocket location =
+  Socket.init (websocketUrl location)
+  |> Socket.on "world:update" room SentWorld
+
 init : Flags -> (Model, Cmd Msg)
 init {location} =
-    ({world = World.empty, location = location},  Cmd.none)
+  let model = { world = World.empty
+              , socket = initSocket location
+              }
+  in
+    (model, joinChannel)
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
   case action of
-    Response message ->
-      let world = parseResponse message
-      in ({model | world = world}, Cmd.none)
+    PhoenixMsg msg ->
+        let
+            (socket, phxCmd) = Socket.update msg model.socket
+        in
+            ({model | socket = socket}, Cmd.map PhoenixMsg phxCmd)
+
+    SentWorld json ->
+        let world = parseResponse json
+        in
+            ({model | world = world}, Cmd.none)
+
+    JoinChannel ->
+      let
+        channel = Phoenix.Channel.init room
+        (socket, phxCmd) = Socket.join channel model.socket
+      in
+        ({model | socket = socket}, Cmd.map PhoenixMsg phxCmd)
 
 subscriptions : Model -> Sub Msg
-subscriptions {location} =
-  let
-      url = websocketUrl location
-  in
-      Sub.batch [ WebSocket.listen url Response ]
-
+subscriptions {socket} =
+    Socket.listen socket PhoenixMsg
 
 websocketUrl : String -> String
 websocketUrl hostname =
-  "ws://" ++ hostname ++ ":4000/ws"
-
+  "ws://" ++ hostname ++ ":4000/socket/websocket"
 
 view : Model -> Html Msg
 view {world} =
@@ -101,6 +134,6 @@ nestBox nests =
           , table [] tableBody
           ]
 
-parseResponse : String -> World
+parseResponse : JE.Value -> World
 parseResponse message =
     Result.withDefault World.empty (World.parse message)

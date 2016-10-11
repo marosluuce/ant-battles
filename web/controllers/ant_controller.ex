@@ -2,6 +2,7 @@ defmodule AntBattles.AntController do
   use AntBattles.Web, :controller
 
   alias AntBattles.Engine
+  alias AntBattles.Move
 
   def index(conn, _params) do
     render conn, "index.html"
@@ -26,7 +27,7 @@ defmodule AntBattles.AntController do
 
   def move(conn, %{"ant_id" => ant_id, "direction" => direction}) do
     {converted_id, _} = Integer.parse(ant_id)
-    {status, message} = Engine.move_ant(converted_id, direction)
+    {status, message} = Engine.move_ant(converted_id, Move.convert_dir(direction))
 
     json(conn, %{status: status, message: message})
   end

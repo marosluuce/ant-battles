@@ -104,7 +104,9 @@ defmodule AntBattles.World do
     do_move_ant(ant, world, direction)
   end
 
-  defp amount_of_food_at(world, pos), do: Map.get(world.food, pos, 0)
+  defp amount_of_food_at(world, pos) do
+    Map.get(world.food, pos, 0)
+  end
 
   defp ant_reached_own_nest?(world, ant) do
     case find(world, ant.nest_id) do

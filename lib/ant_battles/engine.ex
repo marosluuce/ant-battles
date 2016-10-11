@@ -26,7 +26,7 @@ defmodule AntBattles.Engine do
     case Command.execute(command, world) do
       {:ok, new_world} ->
         {:reply, Command.success(command, new_world), new_world}
-      _                ->
+      _  ->
         {:reply, Command.failure(command, world), world}
     end
   end
