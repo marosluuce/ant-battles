@@ -9,6 +9,7 @@ import Color exposing (Color)
 import World exposing (World, Ant, Nest, Point)
 import Util exposing (randomColor)
 
+scale : number
 scale = 20
 
 render : (Int, Int) -> World -> Html a
@@ -33,6 +34,7 @@ background blocksWide blocksHigh scale =
       height = blocksHigh * scale
   in rect width height |> filled Color.lightGrey
 
+renderAnt : Float -> Ant -> Form
 renderAnt scale ant =
   let antColor = randomColor ant.nestId
       renderedAnt = box scale ant.position antColor
@@ -43,6 +45,7 @@ renderAnt scale ant =
       else
           renderedAnt
 
+renderFood : Float -> Point -> Form
 renderFood scale (x, y) =
   let sideLength = scale / 2
   in ngon 6 sideLength
@@ -59,6 +62,7 @@ scaledText string scale (x, y) =
      |> text
      |> move position
 
+box : Float -> (Float, Float) -> Color -> Form
 box scale (x, y) color =
   square scale
   |> filled color
