@@ -6,7 +6,6 @@ import Html.App as Html
 import Phoenix.Socket as Socket
 import Phoenix.Channel
 import Json.Encode as JE
-import Task
 
 import Arena
 import World exposing (World, Nest)
@@ -19,13 +18,6 @@ type alias Model =
   { world : World
   , socket : Socket.Socket Msg
   }
-
-always : a -> b -> a
-always a _ = a
-
-joinChannel : Cmd Msg
-joinChannel =
-    Task.perform (always JoinChannel) (always JoinChannel) (Task.succeed ())
 
 type Msg
   = SentWorld JE.Value
@@ -55,7 +47,7 @@ init {location} =
               , socket = initSocket location
               }
   in
-    (model, joinChannel)
+    update JoinChannel model
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update action model =
@@ -64,19 +56,19 @@ update action model =
         let
             (socket, phxCmd) = Socket.update msg model.socket
         in
-            ({model | socket = socket}, Cmd.map PhoenixMsg phxCmd)
+            {model | socket = socket} ! [Cmd.map PhoenixMsg phxCmd]
 
     SentWorld json ->
         let world = parseResponse json
         in
-            ({model | world = world}, Cmd.none)
+            {model | world = world} ! []
 
     JoinChannel ->
       let
         channel = Phoenix.Channel.init room
         (socket, phxCmd) = Socket.join channel model.socket
       in
-        ({model | socket = socket}, Cmd.map PhoenixMsg phxCmd)
+        {model | socket = socket} ! [Cmd.map PhoenixMsg phxCmd]
 
 subscriptions : Model -> Sub Msg
 subscriptions {socket} =
