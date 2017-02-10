@@ -34,33 +34,33 @@ empty =
     }
 
 parse : JE.Value -> Result String World
-parse string =
-    decodeValue worldDecoder string
+parse value =
+    decodeValue worldDecoder value
 
 worldDecoder : Decoder World
 worldDecoder =
-  object3 World
-    ("ants" := (list antDecoder))
-    ("food" := (list pointDecoder))
-    ("nests" := (list nestDecoder))
+  map3 World
+    (field "ants" (list antDecoder))
+    (field "food" (list pointDecoder))
+    (field "nests" (list nestDecoder))
 
 antDecoder : Decoder Ant
 antDecoder =
-  object4 Ant
-    ("location" := pointDecoder)
-    ("team" := string)
-    ("got_food" := bool)
-    ("nest" := int)
+  map4 Ant
+    (field "location" pointDecoder)
+    (field "team" string)
+    (field "got_food" bool)
+    (field "nest" int)
 
 nestDecoder : Decoder Nest
 nestDecoder =
-  object5 Nest
-    ("id" := int)
-    ("location" := pointDecoder)
-    ("team" := string)
-    ("ants" := int)
-    ("food" := int)
+  map5 Nest
+    (field "id" int)
+    (field "location" pointDecoder)
+    (field "team" string)
+    (field "ants" int)
+    (field "food" int)
 
 pointDecoder : Decoder Point
 pointDecoder =
-  tuple2 (,) float float
+  map2 (,) (index 0 float) (index 1 float)

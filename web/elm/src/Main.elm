@@ -2,7 +2,6 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.App as Html
 import Phoenix.Socket as Socket
 import Phoenix.Channel
 import Json.Encode as JE
@@ -24,9 +23,9 @@ type Msg
   | PhoenixMsg (Socket.Msg Msg)
   | JoinChannel
 
-main : Program Flags
+main : Program Flags Model Msg
 main =
-  Html.programWithFlags
+  programWithFlags
     { init = init
     , view = view
     , update = update
