@@ -44,7 +44,7 @@ defmodule MessageTest do
   test "ant details with surroundings" do
     ant_1 = %Ant{pos: {0, 0}, id: 1, nest_id: 2, team: "me", has_food: false}
     ant_2 = %Ant{pos: {1, 1}, id: 2, nest_id: 2, team: "me", has_food: false}
-    world = %World{ants: [ant_1, ant_2], food: %{{0, 1} => 1}}
+    world = %World{ants: %{1 => ant_1, 2 => ant_2}, food: %{{0, 1} => 1}}
 
     assert %{
       type: :ant,

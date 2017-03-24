@@ -22,6 +22,7 @@ defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Observe do
 
   defp ants(world) do
     world.ants
+    |> Map.values
     |> Enum.map(&Message.details/1)
   end
 
@@ -34,6 +35,7 @@ defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Observe do
 
   defp nests(world) do
     world.nests
+    |> Map.values
     |> Enum.map(&Message.details/1)
   end
 end

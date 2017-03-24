@@ -9,7 +9,7 @@ defmodule LookTest do
 
   setup do
     ant = %Ant{id: 1}
-    world = %World{ants: [ant]}
+    world = %World{ants: %{1 => ant}}
 
     [ant: ant, world: world]
   end

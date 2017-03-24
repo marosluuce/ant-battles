@@ -12,7 +12,7 @@ defmodule NestTest do
   end
 
   test "spawning an ant can fail" do
-    assert {:error, :insufficient_food} = Nest.spawn_ant(%Nest{food: 0})
+    assert %Nest{food: 0, ants: 0} = Nest.spawn_ant(%Nest{food: 0})
   end
 
   test "delivering food increases food" do

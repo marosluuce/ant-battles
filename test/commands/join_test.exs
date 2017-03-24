@@ -15,7 +15,7 @@ defmodule JoinTest do
 
   test "it sends a success message" do
     {:ok, world} = Command.execute(%Join{team: "name"}, %World{})
-    message = Message.details(Enum.at(world.nests, 0))
+    message = Message.details(World.nest(world, "name"))
 
     assert {:ok, message} == Command.success(%Join{team: "name"}, world)
   end

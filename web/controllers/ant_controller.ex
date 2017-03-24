@@ -19,29 +19,25 @@ defmodule AntBattles.AntController do
   end
 
   def spawn(conn, %{"nest_id" => nest_id}) do
-    {converted_id, _} = Integer.parse(nest_id)
-    {status, message} = Engine.spawn_ant(converted_id)
+    {status, message} = Engine.spawn_ant(nest_id)
 
     json(conn, %{status: status, message: message})
   end
 
   def move(conn, %{"ant_id" => ant_id, "direction" => direction}) do
-    {converted_id, _} = Integer.parse(ant_id)
-    {status, message} = Engine.move_ant(converted_id, Move.convert_dir(direction))
+    {status, message} = Engine.move_ant(ant_id, Move.convert_dir(direction))
 
     json(conn, %{status: status, message: message})
   end
 
   def look(conn, %{"ant_id" => ant_id}) do
-    {converted_id, _} = Integer.parse(ant_id)
-    {status, message} = Engine.look(converted_id)
+    {status, message} = Engine.look(ant_id)
 
     json(conn, %{status: status, message: message})
   end
 
   def info(conn, %{"id" => id}) do
-    {converted_id, _} = Integer.parse(id)
-    {status, message} = Engine.info(converted_id)
+    {status, message} = Engine.info(id)
 
     json(conn, %{status: status, message: message})
   end

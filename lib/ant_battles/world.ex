@@ -6,7 +6,7 @@ defmodule AntBattles.World do
   alias AntBattles.Nest
   alias AntBattles.Nests
 
-  defstruct nests: [], ants: [], food: %{}
+  defstruct nests: %{}, ants: %{}, food: %{}
 
   def new([food_stacks: food_stacks, food_stack_size: food_stack_size]) do
     add_initial_food(%__MODULE__{}, food_stacks, food_stack_size)
@@ -29,13 +29,14 @@ defmodule AntBattles.World do
     end
   end
 
-  defp add_nest(world, nest), do: update_in(world.nests, &([nest | &1]))
+  defp add_nest(world, nest), do: update_in(world.nests, &Map.put(&1, nest.id, nest))
 
-  defp new_nest(team), do: %Nest{id: id(), team: team}
+  defp new_nest(team), do: Nest.create(id(), team)
 
   def spawn_ant(world, nest_id) do
-    {nest, world} = fetch_nest(world, nest_id)
-    do_spawn_ant(nest, world)
+    world
+    |> find(nest_id)
+    |> do_spawn_ant(world)
   end
 
   defp do_spawn_ant({:error, _}, _), do: {:error, :unknown_nest}
@@ -45,9 +46,11 @@ defmodule AntBattles.World do
 
   defp spawn_ant(_, _, {:error, msg}), do: {:error, msg}
   defp spawn_ant(world, _, nest) do
-    new_ant = %Ant{id: id(), nest_id: nest.id, pos: nest.pos, team: nest.team}
+    new_ant = Ant.create(id(), nest)
 
-    {:ok, %{world | nests: [nest | world.nests], ants: [new_ant | world.ants]}}
+    {:ok,
+      %{world | nests: %{world.nests | nest.id => nest},
+                ants: Map.put(world.ants, new_ant.id, new_ant)}}
   end
 
   def spawn_food(world, position, quantity \\ 1) do
@@ -82,11 +85,13 @@ defmodule AntBattles.World do
   end
 
   defp find_neighbors(positions, world=%__MODULE__{ants: ants, nests: nests})  do
-    ants ++ nests ++ food(world)
-    |> Enum.filter(&(&1.pos in positions))
+    Map.values(ants) ++ Map.values(nests) ++ food(world)
+    |> Enum.filter(fn obj -> obj.pos in positions end)
   end
 
-  defp group_by_position(entities), do: Enum.group_by(entities, &(&1.pos))
+  defp group_by_position(entities) do
+    entities |> Enum.group_by(&(&1.pos))
+  end
 
   defp convert_position_keys_to_direction(neighbors, pos) do
     neighbors
@@ -100,7 +105,7 @@ defmodule AntBattles.World do
   end
 
   def move_ant(world, ant_id, direction) do
-    {ant, world} = fetch_ant(world, ant_id)
+    ant = find(world, ant_id)
     do_move_ant(ant, world, direction)
   end
 
@@ -121,27 +126,13 @@ defmodule AntBattles.World do
   defp ant_found_food?(world, ant), do: amount_of_food_at(world, ant.pos) > 0
 
   defp ant_gets_food(world, ant) do
-    %{world | ants: [Ant.pick_up_food(ant) | world.ants]} |> pick_up_food(ant.pos)
+    %{world | ants: %{world.ants | ant.id => Ant.pick_up_food(ant)}} |> pick_up_food(ant.pos)
   end
 
   defp ant_delivers_food(world, ant) do
-    {nest, world} = fetch_nest(world, ant.nest_id)
+    nest = find(world, ant.nest_id)
 
-    %{world | ants: [Ant.drop_food(ant) | world.ants], nests: [Nest.deliver_food(nest) | world.nests]}
-  end
-
-  defp fetch_ant(world, ant_id) do
-    ant = find(world, ant_id)
-    world = update_in(world.ants, &(List.delete(&1, ant)))
-
-    {ant, world}
-  end
-
-  defp fetch_nest(world, nest_id) do
-    nest = find(world, nest_id)
-    world = update_in(world.nests, &(List.delete(&1, nest)))
-
-    {nest, world}
+    %{world | ants: %{world.ants | ant.id => Ant.drop_food(ant)}, nests: %{world.nests | nest.id => Nest.deliver_food(nest)}}
   end
 
   defp do_move_ant({:error, _}, _, _), do: {:error, :unknown_ant}
@@ -156,43 +147,44 @@ defmodule AntBattles.World do
         {:ok, ant_delivers_food(world, moved_ant)}
 
       true ->
-        {:ok, update_in(world.ants, &([moved_ant | &1]))}
+        {:ok, update_in(world.ants, &(%{&1 | moved_ant.id => moved_ant}))}
     end
   end
 
   def newest_ant(world, nest_id) do
     world
     |> ants_by_nest(nest_id)
-    |> Enum.max_by(&(&1.id))
+    |> Enum.max_by(fn {id, _} -> id end)
+    |> elem(1)
   end
 
   def ant(world, id) do
-    Enum.find(world.ants, &(&1.id == id))
+    Map.get(world.ants, id)
   end
 
   def ants_by_nest(world, nest_id) do
-    Enum.filter(world.ants, &(&1.nest_id == nest_id))
+    Enum.filter(world.ants, fn {_, ant} -> ant.nest_id == nest_id end)
   end
 
   def nest(world, team) do
-    Enum.find(world.nests, {:error, :not_found}, &(&1.team == team))
+    result = Enum.find(world.nests, {:error, :not_found}, fn {_, nest} -> nest.team == team end)
+
+    case result do
+      {:error, _} -> result
+      _ -> elem(result, 1)
+    end
   end
 
   def food(world) do
-    Enum.filter_map(
-      world.food,
-      fn {_, quantity} -> quantity > 0 end,
-      fn {location, quantity} -> %Food{pos: location, quantity: quantity} end
-    )
+    Food.from_map(world.food)
   end
 
   def find(world, id) do
-    Enum.find(
-      world.nests ++ world.ants,
-      {:error, :not_found},
-      &(&1.id == id)
-    )
+    case Map.merge(world.nests, world.ants) |> Map.fetch(id) do
+      :error -> {:error, :not_found}
+      {:ok, thing} -> thing
+    end
   end
 
-  defp id, do: System.system_time()
+  defp id, do: System.system_time() |> to_string
 end
