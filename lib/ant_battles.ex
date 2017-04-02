@@ -1,12 +1,20 @@
 defmodule AntBattles do
   use Application
 
+  @engine Application.get_env(:ant_battles, :engine)
+  @stack_size 50
+  @stack_count 100
+
   def start(_type, _args) do
     import Supervisor.Spec
 
     children = [
       supervisor(AntBattles.Endpoint, []),
-      worker(AntBattles.Engine, [[food_stacks: 50, food_stack_size: 100]]),
+      supervisor(Registry, [:unique, AntBattles.Registry.name()]),
+      worker(AntBattles.Engine, [@engine]),
+      worker(AntBattles.Stores.Ants, [@engine]),
+      worker(AntBattles.Stores.Food, [@engine, @stack_size, @stack_count]),
+      worker(AntBattles.Stores.Nests, [@engine]),
       worker(AntBattles.Broadcaster, [200])
     ]
 

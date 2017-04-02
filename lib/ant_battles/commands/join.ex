@@ -4,14 +4,20 @@ end
 
 defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Join do
   alias AntBattles.World
+  alias AntBattles.Stores
   alias AntBattles.Message
 
-  def execute(command, world), do: World.register(world, command.team)
+  def execute(command, name) do
+    if Stores.Nests.registered?(name, command.team) do
+      :error
+    else
+      Stores.Nests.register(name, World.new_nest(command.team))
+      :ok
+    end
+  end
 
-  def success(command, world) do
-    nest = World.nest(world, command.team)
-
-    {:ok, Message.details(nest)}
+  def success(command, name) do
+    {:ok, Message.details(Stores.Nests.find_by_name(name, command.team))}
   end
 
   def failure(_, _), do: {:error, :name_taken}

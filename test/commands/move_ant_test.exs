@@ -2,31 +2,37 @@ defmodule MoveAntTest do
   use ExUnit.Case, async: true
 
   alias AntBattles.Ant
+  alias AntBattles.Stores
   alias AntBattles.Message
-  alias AntBattles.World
   alias AntBattles.Commands.Command
   alias AntBattles.Commands.MoveAnt
 
-  test "it moves an ant" do
+  setup do
+    [name: AntBattles.WorldHelper.create()]
+  end
+
+  test "it moves an ant", context do
+    name = context[:name]
+    Stores.Ants.update(name, %Ant{id: 1, pos: {2, 3}})
     command = %MoveAnt{ant_id: 1, velocity: {0, 1}}
-    world = %World{ants: %{1 => %Ant{id: 1, pos: {2, 3}}}}
 
-    {:ok, updated_world} = Command.execute(command, world)
+    :ok = Command.execute(command, name)
 
-    [ant] = Map.values(updated_world.ants)
+    [ant] = Stores.Ants.all(name)
     assert ant.pos == {2, 4}
   end
 
-  test "it sends a success message" do
+  test "it sends a success message", context do
+    name = context[:name]
     command = %MoveAnt{ant_id: 1}
     ant = %Ant{id: 1, pos: {2, 4}}
-    world = %World{ants: %{1 => ant}}
-    message = Message.with_surroundings(ant, world)
+    Stores.Ants.update(name, ant)
+    message = Message.with_surroundings(ant, name)
 
-    assert {:ok, ^message} = Command.success(command, world)
+    assert {:ok, ^message} = Command.success(command, name)
   end
 
-  test "it sends a failure message" do
-    assert {:error, :invalid_id} = Command.failure(%MoveAnt{ant_id: 1}, %World{})
+  test "it sends a failure message", context do
+    assert {:error, :invalid_id} = Command.failure(%MoveAnt{ant_id: 1}, context[:name])
   end
 end

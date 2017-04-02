@@ -3,9 +3,13 @@ defmodule MessageTest do
 
   alias AntBattles.Ant
   alias AntBattles.Food
+  alias AntBattles.Stores
   alias AntBattles.Message
   alias AntBattles.Nest
-  alias AntBattles.World
+
+  setup do
+    [name: AntBattles.WorldHelper.create()]
+  end
 
   test "nest details" do
     nest = %Nest{id: 1, team: "me", pos: {0, 0}, food: 5}
@@ -41,10 +45,13 @@ defmodule MessageTest do
     } == Message.details(%Food{pos: {0, 0}, quantity: 2})
   end
 
-  test "ant details with surroundings" do
+  test "ant details with surroundings", context do
     ant_1 = %Ant{pos: {0, 0}, id: 1, nest_id: 2, team: "me", has_food: false}
     ant_2 = %Ant{pos: {1, 1}, id: 2, nest_id: 2, team: "me", has_food: false}
-    world = %World{ants: %{1 => ant_1, 2 => ant_2}, food: %{{0, 1} => 1}}
+    name = context[:name]
+    Stores.Ants.add(name, ant_1)
+    Stores.Ants.add(name, ant_2)
+    Stores.Food.add_food(name, {0, 1}, 1)
 
     assert %{
       type: :ant,
@@ -63,6 +70,6 @@ defmodule MessageTest do
         se: [],
         sw: []
       }
-    } == Message.with_surroundings(ant_1, world)
+    } == Message.with_surroundings(ant_1, name)
   end
 end

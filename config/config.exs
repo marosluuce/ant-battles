@@ -1,5 +1,8 @@
 use Mix.Config
 
+config :ant_battles,
+  engine: "anamefortheengine"
+
 config :ant_battles, AntBattles.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "eWVg01ZE/y5qFrN0/vCf1kC1vZ4Y6JSU4zw9m28wWqLjMCFPq1FXndOhDaEApdhn",

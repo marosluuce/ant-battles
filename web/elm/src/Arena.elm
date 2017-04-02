@@ -6,7 +6,7 @@ import Collage exposing (..)
 import Text
 import Color exposing (Color)
 import World exposing (World, Ant, Nest, Point)
-import Util exposing (randomColor)
+import Util exposing (randomColor, parseInt)
 
 
 scale : number
@@ -39,7 +39,7 @@ renderColorSquare : Nest -> Html a
 renderColorSquare { id } =
     let
         nestColor =
-            randomColor id
+            randomColor <| parseInt id
 
         colorSquare =
             square scale |> filled nestColor
@@ -63,7 +63,7 @@ renderAnt : Float -> Ant -> Form
 renderAnt scale ant =
     let
         antColor =
-            randomColor ant.nestId
+            randomColor <| parseInt ant.nestId
 
         renderedAnt =
             box scale ant.position antColor

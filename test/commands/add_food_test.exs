@@ -2,21 +2,26 @@ defmodule AddFoodTest do
   use ExUnit.Case, async: true
 
   alias AntBattles.Food
-  alias AntBattles.World
+  alias AntBattles.Stores
   alias AntBattles.Commands.Command
   alias AntBattles.Commands.AddFood
 
-  test "it adds food to the world" do
-    {:ok, world} = Command.execute(%AddFood{location: {0, 0}, quantity: 5}, %World{})
-
-    assert [%Food{pos: {0, 0}, quantity: 5}] = world |> World.food
+  setup do
+    [name: AntBattles.WorldHelper.create()]
   end
 
-  test "success sends a message" do
-    assert {:ok, :added_food} = Command.success(%AddFood{}, %World{})
+  test "it adds food to the world", context do
+    name = context[:name]
+    :ok = Command.execute(%AddFood{location: {0, 0}, quantity: 5}, name)
+
+    assert [%Food{pos: {0, 0}, quantity: 5}] = Stores.Food.all(name)
   end
 
-  test "failure sends a message" do
-    assert {:error, :failed_to_add_food} = Command.failure(%AddFood{}, %World{})
+  test "success sends a message", context do
+    assert {:ok, :added_food} = Command.success(%AddFood{}, context[:name])
+  end
+
+  test "failure sends a message", context do
+    assert {:error, :failed_to_add_food} = Command.failure(%AddFood{}, context[:name])
   end
 end

@@ -12,51 +12,54 @@ defmodule AntBattles.Engine do
   alias AntBattles.Commands.Observe
   alias AntBattles.Commands.AddFood
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, World.new(args), name: __MODULE__)
+  def start_link(name) do
+    GenServer.start_link(__MODULE__, name, name: via(name))
   end
 
   def init(engine), do: {:ok, engine}
 
-  def handle_call(:get_world, _, world) do
-    {:reply, world, world}
+  def handle_call(:get_world, _, name) do
+    {:reply, name, name}
   end
 
-  def handle_call({:run, command}, _, world) do
-    case Command.execute(command, world) do
-      {:ok, new_world} ->
-        {:reply, Command.success(command, new_world), new_world}
+  def handle_call({:run, command}, _, name) do
+    case Command.execute(command, name) do
+      :error ->
+        {:reply, {:error, {command, name}}, name}
       _  ->
-        {:reply, Command.failure(command, world), world}
+        {:reply, {:ok, {command, name}}, name}
     end
   end
 
-  def handle_cast(:reset, _) do
-    {:noreply, %World{}}
+  def join(name, team) do
+    execute(name, %Join{team: team})
   end
 
-  def join(team), do: execute(%Join{team: team})
-
-  def spawn_ant(nest_id), do: execute(%SpawnAnt{nest_id: nest_id})
-
-  def move_ant(ant_id, direction) do
-    execute(%MoveAnt{ant_id: ant_id, velocity: Move.from_dir(direction)})
+  def spawn_ant(name, nest_id) do
+    execute(name, %SpawnAnt{nest_id: nest_id})
   end
 
-  def look(ant_id), do: execute(%Look{ant_id: ant_id})
-
-  def observe, do: execute(%Observe{})
-
-  def add_food(location, quantity) do
-    execute(%AddFood{location: location, quantity: quantity})
+  def move_ant(name, ant_id, direction) do
+    execute(name, %MoveAnt{ant_id: ant_id, velocity: Move.from_dir(direction)})
   end
 
-  def reset do
-    GenServer.cast(__MODULE__, :reset)
+  def look(name, ant_id) do
+    execute(name, %Look{ant_id: ant_id})
   end
 
-  def info(id) do
-    get_world()
+  def observe(name) do
+    execute(name, %Observe{})
+  end
+
+  def add_food(name, location, quantity) do
+    execute(name, %AddFood{location: location, quantity: quantity})
+  end
+
+  defp notify({:ok, {command, name}}), do: Command.success(command, name)
+  defp notify({:error, {command, name}}), do: Command.failure(command, name)
+
+  def info(name, id) do
+    get_world(name)
     |> World.find(id)
     |> format_info
   end
@@ -64,7 +67,13 @@ defmodule AntBattles.Engine do
   defp format_info({:error, :not_found}), do: {:error, :invalid_id}
   defp format_info(entity), do: {:ok, Message.details(entity)}
 
-  defp get_world, do: GenServer.call(__MODULE__, :get_world)
+  defp get_world(name), do: GenServer.call(via(name), :get_world)
 
-  defp execute(command), do: GenServer.call(__MODULE__, {:run, command})
+  defp execute(name, command) do
+    GenServer.call(via(name), {:run, command}) |> notify
+  end
+
+  def via(name) do
+    {:via, Registry, {Registry.ViaAntBattles, {:engine, name}}}
+  end
 end

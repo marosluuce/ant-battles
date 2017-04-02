@@ -3,10 +3,10 @@ defmodule AntBattles.Commands.AddFood do
 end
 
 defimpl AntBattles.Commands.Command, for: AntBattles.Commands.AddFood do
-  alias AntBattles.World
+  alias AntBattles.Stores.Food
 
-  def execute(command, world) do
-    {:ok, World.spawn_food(world, command.location, command.quantity)}
+  def execute(command, name) do
+    Food.add_food(name, command.location, command.quantity)
   end
 
   def success(_, _), do: {:ok, :added_food}

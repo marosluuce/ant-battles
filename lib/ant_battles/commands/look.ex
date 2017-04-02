@@ -3,25 +3,24 @@ defmodule AntBattles.Commands.Look do
 end
 
 defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Look do
-  alias AntBattles.World
+  alias AntBattles.Stores
   alias AntBattles.Message
 
-  def execute(command, world) do
-    not_found = world
-    |> World.ant(command.ant_id)
+  def execute(command, name) do
+    not_found = Stores.Ants.get(name, command.ant_id)
     |> is_nil
 
     if not_found do
-      {:error, :invalid_id}
+      :error
     else
-      {:ok, world}
+      :ok
     end
   end
 
-  def success(command, world) do
-    message = world
-    |> World.ant(command.ant_id)
-    |> Message.with_surroundings(world)
+  def success(command, name) do
+    message = name
+    |> Stores.Ants.get(command.ant_id)
+    |> Message.with_surroundings(name)
 
     {:ok, message}
   end

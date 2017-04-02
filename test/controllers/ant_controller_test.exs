@@ -1,11 +1,5 @@
 defmodule AntBattles.AntControllerTest do
   use AntBattles.ConnCase
-  alias AntBattles.Engine
-
-  setup do
-    Engine.reset()
-    :ok
-  end
 
   test "GET /", %{conn: conn} do
     conn = get conn, "/"
@@ -13,13 +7,13 @@ defmodule AntBattles.AntControllerTest do
   end
 
   test "joining", %{conn: conn} do
-    conn = get conn, "/api/join/me"
+    conn = get conn, "/api/join/#{random_name()}"
 
     assert %{"status" => "ok", "message" => %{}} = json_response(conn, 200)
   end
 
   test "spawning an ant", %{conn: conn} do
-    conn = get conn, "/api/join/me"
+    conn = get conn, "/api/join/#{random_name()}"
     %{"message" => %{"id" => id}} = json_response(conn, 200)
 
     conn = get conn, "/api/#{id}/spawn"
@@ -28,7 +22,7 @@ defmodule AntBattles.AntControllerTest do
   end
 
   test "moving an ant", %{conn: conn} do
-    conn = get conn, "/api/join/me"
+    conn = get conn, "/api/join/#{random_name()}"
     %{"message" => %{"id" => id}} = json_response(conn, 200)
 
     conn = get conn, "/api/#{id}/spawn"
@@ -40,7 +34,7 @@ defmodule AntBattles.AntControllerTest do
   end
 
   test "looking with an ant", %{conn: conn} do
-    conn = get conn, "/api/join/me"
+    conn = get conn, "/api/join/#{random_name()}"
     %{"message" => %{"id" => id}} = json_response(conn, 200)
 
     conn = get conn, "/api/#{id}/spawn"
@@ -52,11 +46,13 @@ defmodule AntBattles.AntControllerTest do
   end
 
   test "getting info for an entity", %{conn: conn} do
-    conn = get conn, "/api/join/me"
+    conn = get conn, "/api/join/#{random_name()}"
     %{"message" => %{"id" => id}} = json_response(conn, 200)
 
     conn = get conn, "api/#{id}/info"
 
     assert %{"status" => "ok", "message" => %{}} = json_response(conn, 200)
   end
+
+  defp random_name, do: System.system_time |> to_string
 end

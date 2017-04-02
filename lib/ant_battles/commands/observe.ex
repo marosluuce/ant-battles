@@ -4,15 +4,15 @@ end
 
 defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Observe do
   alias AntBattles.Message
-  alias AntBattles.World
+  alias AntBattles.Stores
 
-  def execute(_, world), do: {:ok, world}
+  def execute(_, _), do: :ok
 
-  def success(_, world) do
+  def success(_, name) do
     observed = %{
-      ants: ants(world),
-      food: food(world),
-      nests: nests(world)
+      ants: ants(name),
+      food: food(name),
+      nests: nests(name)
     }
 
     {:ok, observed}
@@ -20,22 +20,22 @@ defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Observe do
 
   def failure(_, _), do: {:error, :failed_to_observe}
 
-  defp ants(world) do
-    world.ants
-    |> Map.values
+  defp ants(name) do
+    name
+    |> Stores.Ants.all
     |> Enum.map(&Message.details/1)
   end
 
-  defp food(world) do
-    world
-    |> World.food
+  defp food(name) do
+    name
+    |> Stores.Food.all
     |> Enum.map(&(&1.pos))
     |> Enum.map(&Tuple.to_list/1)
   end
 
-  defp nests(world) do
-    world.nests
-    |> Map.values
+  defp nests(name) do
+    name
+    |> Stores.Nests.all
     |> Enum.map(&Message.details/1)
   end
 end

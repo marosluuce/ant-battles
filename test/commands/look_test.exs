@@ -2,33 +2,34 @@ defmodule LookTest do
   use ExUnit.Case, async: true
 
   alias AntBattles.Ant
+  alias AntBattles.Stores
   alias AntBattles.Message
-  alias AntBattles.World
   alias AntBattles.Commands.Command
   alias AntBattles.Commands.Look
 
   setup do
-    ant = %Ant{id: 1}
-    world = %World{ants: %{1 => ant}}
-
-    [ant: ant, world: world]
+    [name: AntBattles.WorldHelper.create()]
   end
 
   test "looking succeeds when the ant exists", context do
-    assert {:ok, context[:world]} == Command.execute(%Look{ant_id: 1}, context[:world])
+    name = context[:name]
+    Stores.Ants.add(name, %Ant{id: 1})
+    assert :ok = Command.execute(%Look{ant_id: 1}, name)
   end
 
-  test "looking errors when the ant does not exist" do
-    assert {:error, :invalid_id} == Command.execute(%Look{ant_id: 1}, %World{})
+  test "looking errors when the ant does not exist", context do
+    assert :error == Command.execute(%Look{ant_id: 1}, context[:name])
   end
 
   test "sending a success message", context do
-    message = Message.with_surroundings(context[:ant], context[:world])
+    name = context[:name]
+    Stores.Ants.add(name, %Ant{id: 1})
+    message = Message.with_surroundings(%Ant{id: 1}, name)
 
-    assert {:ok, message} == Command.success(%Look{ant_id: 1}, context[:world])
+    assert {:ok, message} == Command.success(%Look{ant_id: 1}, name)
   end
 
-  test "sending a failure message" do
-    assert {:error, :invalid_id} = Command.failure(%Look{}, %World{})
+  test "sending a failure message", context do
+    assert {:error, :invalid_id} = Command.failure(%Look{}, context[:name])
   end
 end

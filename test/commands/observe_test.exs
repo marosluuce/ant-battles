@@ -1,19 +1,22 @@
 defmodule ObserveTest do
   use ExUnit.Case, async: true
 
-  alias AntBattles.World
   alias AntBattles.Commands.Command
   alias AntBattles.Commands.Observe
 
-  test "execute always succeeds" do
-    assert {:ok, :world} = Command.execute(%Observe{}, :world)
+  setup do
+    [name: AntBattles.WorldHelper.create()]
   end
 
-  test "success sends a message" do
-    assert {:ok, %{ants: [], food: [], nests: []}} = Command.success(%Observe{}, %World{})
+  test "execute always succeeds", context do
+    assert :ok = Command.execute(%Observe{}, context[:name])
   end
 
-  test "failure sends a message" do
-    assert {:error, :failed_to_observe} = Command.failure(%Observe{}, %World{})
+  test "success sends a message", context do
+    assert {:ok, %{ants: [], food: [], nests: []}} = Command.success(%Observe{}, context[:name])
+  end
+
+  test "failure sends a message", context do
+    assert {:error, :failed_to_observe} = Command.failure(%Observe{}, context[:name])
   end
 end

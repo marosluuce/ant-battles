@@ -1,4 +1,4 @@
-module Util exposing (randomColor)
+module Util exposing (randomColor, parseInt)
 
 import Color exposing (..)
 import Random exposing (..)
@@ -23,3 +23,7 @@ randomColor seedVal =
             step (float 0.5 1) seed3
     in
         rgba r g b a
+
+parseInt : String -> Int
+parseInt val =
+    String.toInt val |> Result.withDefault 0

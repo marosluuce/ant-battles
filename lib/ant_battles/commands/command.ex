@@ -7,7 +7,7 @@ defprotocol AntBattles.Commands.Command do
 end
 
 defimpl AntBattles.Commands.Command, for: Any do
-  def execute(_, world), do: world
+  def execute(_, _), do: :error
 
   def success(_, _), do: {:error, :unknown_command}
 

@@ -9,7 +9,7 @@ type alias Point =
 
 
 type alias Nest =
-    { id : Int
+    { id : String
     , position : Point
     , team : String
     , ants : Int
@@ -21,7 +21,7 @@ type alias Ant =
     { position : Point
     , team : String
     , hasFood : Bool
-    , nestId : Int
+    , nestId : String
     }
 
 
@@ -59,13 +59,13 @@ antDecoder =
         (field "location" pointDecoder)
         (field "team" string)
         (field "got_food" bool)
-        (field "nest" int)
+        (field "nest" string)
 
 
 nestDecoder : Decoder Nest
 nestDecoder =
     map5 Nest
-        (field "id" int)
+        (field "id" string)
         (field "location" pointDecoder)
         (field "team" string)
         (field "ants" int)

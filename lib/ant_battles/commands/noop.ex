@@ -3,7 +3,7 @@ defmodule AntBattles.Commands.Noop do
 end
 
 defimpl AntBattles.Commands.Command, for: AntBattles.Commands.Noop do
-  def execute(_, world), do: {:ok, world}
+  def execute(_, _), do: :ok
 
   def success(_, _), do: {:ok, :ok}
 
